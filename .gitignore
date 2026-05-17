@@ -82,6 +82,11 @@ tmp/
 temp/
 *.tmp
 *.temp
+backend/build-errors.log
+
+# 本地数据库备份（含生产敏感数据，绝不提交）
+db_backup/
+*.dump
 *.log
 *.bak
 .cache/
