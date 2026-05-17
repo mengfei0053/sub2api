@@ -1,0 +1,40 @@
+root = "."
+testdata_dir = "testdata"
+tmp_dir = "tmp"
+
+[build]
+  cmd = "go build -o ./tmp/server ./cmd/server/"
+  bin = "./tmp/server"
+  full_bin = ""
+  include_ext = ["go", "yaml", "yml"]
+  exclude_dir = ["tmp", "ent", "migrations", "resources", "testdata", "vendor"]
+  include_dir = []
+  exclude_file = []
+  exclude_regex = ["_test\\.go$", "wire_gen\\.go$", "_gen\\.go$"]
+  exclude_unchanged = true
+  follow_symlink = false
+  log = "build-errors.log"
+  delay = 800
+  stop_on_error = false
+  send_interrupt = true
+  kill_delay = "2s"
+  rerun = false
+  rerun_delay = 500
+
+[color]
+  main = "magenta"
+  watcher = "cyan"
+  build = "yellow"
+  runner = "green"
+  app = ""
+
+[log]
+  time = false
+  main_only = false
+
+[misc]
+  clean_on_exit = true
+
+[screen]
+  clear_on_rebuild = false
+  keep_scroll = true
