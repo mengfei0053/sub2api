@@ -1,0 +1,95 @@
+name: sub2api-ebeeai
+
+services:
+  sub2api:
+    image: ${SUB2API_IMAGE:-sub2api}:${SUB2API_VERSION:-latest}
+    build:
+      context: ..
+      dockerfile: deploy_ebeeai/Dockerfile
+      args:
+        VERSION: ${SUB2API_VERSION:-}
+        COMMIT: ${SUB2API_COMMIT:-local}
+        DATE: ${SUB2API_BUILD_DATE:-}
+        GOPROXY: ${GOPROXY:-https://goproxy.cn,direct}
+        GOSUMDB: ${GOSUMDB:-sum.golang.google.cn}
+    container_name: ${SUB2API_CONTAINER_NAME:-sub2api}
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 45s
+    ulimits:
+      nofile:
+        soft: 100000
+        hard: 100000
+    ports:
+      - "${SUB2API_BIND_HOST:-0.0.0.0}:${SUB2API_HOST_PORT:-8080}:8080"
+    volumes:
+      - ./data:/app/data
+    environment:
+      AUTO_SETUP: "true"
+      DATA_DIR: /app/data
+      GIN_MODE: release
+      RUN_MODE: ${RUN_MODE:-standard}
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: "8080"
+      SERVER_MODE: release
+      TZ: ${TZ:-America/New_York}
+
+      DATABASE_HOST: ${DATABASE_HOST:-1Panel-postgresql-VvPu}
+      DATABASE_PORT: ${DATABASE_PORT:-5432}
+      DATABASE_USER: ${DATABASE_USER:?DATABASE_USER is required}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD is required}
+      DATABASE_DBNAME: ${DATABASE_DBNAME:-sub2api}
+      DATABASE_SSLMODE: ${DATABASE_SSLMODE:-disable}
+      DATABASE_MAX_OPEN_CONNS: ${DATABASE_MAX_OPEN_CONNS:-50}
+      DATABASE_MAX_IDLE_CONNS: ${DATABASE_MAX_IDLE_CONNS:-10}
+      DATABASE_CONN_MAX_LIFETIME_MINUTES: ${DATABASE_CONN_MAX_LIFETIME_MINUTES:-30}
+      DATABASE_CONN_MAX_IDLE_TIME_MINUTES: ${DATABASE_CONN_MAX_IDLE_TIME_MINUTES:-5}
+
+      REDIS_HOST: ${REDIS_HOST:-1Panel-redis-mvhm}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_DB: ${REDIS_DB:-0}
+      REDIS_POOL_SIZE: ${REDIS_POOL_SIZE:-1024}
+      REDIS_MIN_IDLE_CONNS: ${REDIS_MIN_IDLE_CONNS:-10}
+      REDIS_ENABLE_TLS: ${REDIS_ENABLE_TLS:-false}
+
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_EXPIRE_HOUR: ${JWT_EXPIRE_HOUR:-24}
+      TOTP_ENCRYPTION_KEY: ${TOTP_ENCRYPTION_KEY:-}
+
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@sub2api.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+
+      GEMINI_OAUTH_CLIENT_ID: ${GEMINI_OAUTH_CLIENT_ID:-}
+      GEMINI_OAUTH_CLIENT_SECRET: ${GEMINI_OAUTH_CLIENT_SECRET:-}
+      GEMINI_OAUTH_SCOPES: ${GEMINI_OAUTH_SCOPES:-}
+      GEMINI_QUOTA_POLICY: ${GEMINI_QUOTA_POLICY:-}
+      GEMINI_CLI_OAUTH_CLIENT_SECRET: ${GEMINI_CLI_OAUTH_CLIENT_SECRET:-}
+      ANTIGRAVITY_OAUTH_CLIENT_SECRET: ${ANTIGRAVITY_OAUTH_CLIENT_SECRET:-}
+      ANTIGRAVITY_USER_AGENT_VERSION: ${ANTIGRAVITY_USER_AGENT_VERSION:-}
+
+      SECURITY_URL_ALLOWLIST_ENABLED: ${SECURITY_URL_ALLOWLIST_ENABLED:-false}
+      SECURITY_URL_ALLOWLIST_ALLOW_INSECURE_HTTP: ${SECURITY_URL_ALLOWLIST_ALLOW_INSECURE_HTTP:-false}
+      SECURITY_URL_ALLOWLIST_ALLOW_PRIVATE_HOSTS: ${SECURITY_URL_ALLOWLIST_ALLOW_PRIVATE_HOSTS:-false}
+      SECURITY_URL_ALLOWLIST_UPSTREAM_HOSTS: ${SECURITY_URL_ALLOWLIST_UPSTREAM_HOSTS:-}
+      UPDATE_PROXY_URL: ${UPDATE_PROXY_URL:-}
+    networks:
+      onepanel:
+        aliases:
+          - sub2api
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-T", "5", "-O", "/dev/null", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+networks:
+  onepanel:
+    name: ${ONEPANEL_NETWORK:-1panel-network}
+    external: true
