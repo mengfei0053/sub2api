@@ -1,47 +1,50 @@
-# EbeeAI Docker Deployment
+# EbeeAI Docker 部署
 
-This directory contains the EbeeAI-specific Docker deployment. It does not
-modify the repository's original Dockerfile or compose files.
+这个目录存放 EbeeAI 专用的 Docker 部署文件。这里的文件不会改动仓库原有的
+`Dockerfile` 或 `deploy/docker-compose*.yml`。
 
-## First Run
+## 首次部署
 
-Run commands from this directory:
+以下命令都在 `deploy_ebeeai` 目录下执行：
 
 ```sh
 cp .env.example .env
 ```
 
-Edit `.env` and copy the existing production values from
-`/opt/sub2api/config.yaml`, especially:
+编辑 `.env`，把生产环境 `/opt/sub2api/config.yaml` 里的现有配置复制过来，尤其是：
 
 - `DATABASE_USER`
 - `DATABASE_PASSWORD`
 - `REDIS_PASSWORD`
 - `JWT_SECRET`
-- `TOTP_ENCRYPTION_KEY` if production 2FA/payment resume tokens depend on it
+- `TOTP_ENCRYPTION_KEY`，如果生产环境的 2FA 或支付恢复 token 依赖它
 
-The default timezone in this deployment is `America/New_York`.
+这套部署默认使用美国东部时区：
 
-Build the image:
+```text
+America/New_York
+```
+
+本地构建镜像：
 
 ```sh
 docker compose --env-file .env build sub2api
 ```
 
-Before the first Docker cutover, stop the old systemd service on the server:
+第一次从 systemd 切换到 Docker 前，先在服务器上停掉旧服务：
 
 ```sh
 systemctl stop sub2api
 systemctl disable sub2api
 ```
 
-Start the container:
+启动容器：
 
 ```sh
 docker compose --env-file .env up -d sub2api
 ```
 
-Verify:
+验证：
 
 ```sh
 docker compose --env-file .env ps
@@ -51,32 +54,40 @@ curl -fsS https://ebeeai.net/health
 docker logs --tail=100 sub2api
 ```
 
-## Upgrade
+## 升级
 
-The GitHub Actions workflow `.github/workflows/ebeeai-image.yml` builds and
-pushes `linux/amd64` images to GHCR only when a `v*` Git tag is pushed:
+GitHub Actions workflow `.github/workflows/ebeeai-image.yml` 只会在推送
+`v*` Git tag 时构建并推送 `linux/amd64` 镜像到 GHCR。
 
-```sh
-git tag v0.1.127
-git push origin v0.1.127
-```
-
-The pushed tags are:
+发布 tag 命名规则：
 
 ```text
-ghcr.io/<github-owner>/sub2api-ebeeai:<version>
+v<上游tag版本号>_<EbeeAI版本号>
+```
+
+示例：
+
+```sh
+git tag v0.1.127_0.0.1
+git push origin v0.1.127_0.0.1
+```
+
+推送后的镜像 tag：
+
+```text
+ghcr.io/<github-owner>/sub2api-ebeeai:<上游版本>_<EbeeAI版本>
 ghcr.io/<github-owner>/sub2api-ebeeai:sha-<commit>
 ghcr.io/<github-owner>/sub2api-ebeeai:latest
 ```
 
-Set these values in `.env`:
+在服务器 `.env` 中设置：
 
 ```sh
 SUB2API_IMAGE=ghcr.io/<github-owner>/sub2api-ebeeai
-SUB2API_VERSION=<version>
+SUB2API_VERSION=<上游版本>_<EbeeAI版本>
 ```
 
-Then:
+然后执行：
 
 ```sh
 docker compose --env-file .env pull sub2api
@@ -84,14 +95,13 @@ docker compose --env-file .env up -d sub2api
 curl -fsS http://127.0.0.1:8080/health
 ```
 
-## Rollback
+## 回滚
 
-Set `SUB2API_VERSION` back to the previous tag and run:
+把 `.env` 里的 `SUB2API_VERSION` 改回上一个可用版本，然后执行：
 
 ```sh
 docker compose --env-file .env up -d sub2api
 curl -fsS http://127.0.0.1:8080/health
 ```
 
-If a failed release applied forward-only database migrations, restore the
-PostgreSQL backup taken before the release before relying on an older image.
+如果失败版本已经执行过 forward-only 数据库迁移，只回滚镜像可能不够，需要先恢复发布前的 PostgreSQL 备份。
