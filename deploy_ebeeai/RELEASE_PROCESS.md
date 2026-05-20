@@ -188,6 +188,18 @@ JWT_EXPIRE_HOUR
 TOTP_ENCRYPTION_KEY
 ```
 
+也可以先在服务器生成一份真实环境变量文件，再把内容复制到 1Panel：
+
+```sh
+cat /opt/sub2api/docker-deploy/1panel.env
+```
+
+这份文件应由 `deploy_ebeeai/README.md` 中的生成命令从旧 `/opt/sub2api/config.yaml` 生成，权限保持 `600`，不要提交到 Git。需要脱敏检查时：
+
+```sh
+sed -E 's/(PASSWORD|SECRET|KEY)=.*/\1=***MASKED***/I' /opt/sub2api/docker-deploy/1panel.env
+```
+
 4. 确认 1Panel 外部网络和已有服务别名：
 
 ```text
