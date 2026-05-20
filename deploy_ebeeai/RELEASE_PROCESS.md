@@ -170,3 +170,47 @@ git push origin v${NEW_VERSION}_${EBEEAI_VERSION}
 - 不要提交真实 `.env`、数据库备份、token、密钥或运行时生成的数据。
 - 打 tag 前确认 `backend/cmd/server/VERSION` 和上游版本一致。
 - 如果某次发布执行了 forward-only 数据库迁移，回滚镜像时可能还需要恢复发布前的 PostgreSQL 备份。
+
+## 1Panel 发布流程
+
+镜像发布完成后，在 1Panel 的“容器编排”里发布，不直接在服务器手写一次性 compose：
+
+1. 打开 `deploy_ebeeai/docker-compose.yml`，把完整内容贴入 1Panel 编排 YAML。
+2. 打开 `deploy_ebeeai/.env.example`，把完整内容贴入 1Panel 编排环境变量。
+3. 将环境变量里的占位值替换为生产环境旧 `/opt/sub2api/config.yaml` 中的真实值，至少包括：
+
+```text
+DATABASE_USER
+DATABASE_PASSWORD
+REDIS_PASSWORD
+JWT_SECRET
+JWT_EXPIRE_HOUR
+TOTP_ENCRYPTION_KEY
+```
+
+4. 确认 1Panel 外部网络和已有服务别名：
+
+```text
+ONEPANEL_NETWORK=1panel-network
+DATABASE_HOST=postgresql
+REDIS_HOST=redis
+```
+
+如果目标服务器没有 `postgresql` / `redis` 网络别名，改成实际容器名，例如 `1Panel-postgresql-xxxx`。
+
+5. 首次从 systemd 迁移时，先按 `deploy_ebeeai/README.md` 备份 PostgreSQL、Redis 和 `/opt/sub2api/data`，并准备 `/opt/sub2api/docker-data/config.yaml`。
+6. 先用临时端口验证：
+
+```text
+SUB2API_BIND_HOST=127.0.0.1
+SUB2API_HOST_PORT=18080
+```
+
+验证 `http://127.0.0.1:18080/health` 正常后，停止旧 systemd 服务，再改为正式端口：
+
+```text
+SUB2API_BIND_HOST=0.0.0.0
+SUB2API_HOST_PORT=8080
+```
+
+7. 后续升级只改 `SUB2API_VERSION`，在 1Panel 里拉取镜像并重新创建容器。
