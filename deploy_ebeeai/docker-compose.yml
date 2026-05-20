@@ -7,14 +7,22 @@ services:
     restart: unless-stopped
     init: true
     stop_grace_period: 45s
+    ulimits:
+      nofile:
+        soft: 100000
+        hard: 100000
     ports:
       - "${SUB2API_BIND_HOST:-127.0.0.1}:${SUB2API_HOST_PORT:-8080}:8080"
     volumes:
-      - ./data:/app/data
+      - ${SUB2API_DATA_DIR:-./data}:/app/data
     environment:
       AUTO_SETUP: "true"
+      SERVER_HOST: "0.0.0.0"
+      SERVER_PORT: "8080"
+      SERVER_MODE: "release"
+      GIN_MODE: "release"
       RUN_MODE: ${RUN_MODE:-standard}
-      TZ: ${TZ:-America/New_York}
+      TZ: ${TZ:-Asia/Shanghai}
 
       DATABASE_HOST: ${DATABASE_HOST:?DATABASE_HOST is required}
       DATABASE_PORT: ${DATABASE_PORT:-5432}
@@ -30,6 +38,7 @@ services:
       REDIS_ENABLE_TLS: ${REDIS_ENABLE_TLS:-false}
 
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_EXPIRE_HOUR: ${JWT_EXPIRE_HOUR:-24}
       TOTP_ENCRYPTION_KEY: ${TOTP_ENCRYPTION_KEY:-}
 
       SECURITY_URL_ALLOWLIST_ENABLED: ${SECURITY_URL_ALLOWLIST_ENABLED:-false}
