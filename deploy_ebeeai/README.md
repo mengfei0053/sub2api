@@ -77,10 +77,11 @@ cp -a /opt/sub2api/.installed /opt/sub2api/docker-data/.installed 2>/dev/null ||
 
 如果旧配置中 `redis.password` 有值，`.env` 中的 `REDIS_PASSWORD` 必须填同一个值。若旧库里已有启用 2FA 的用户，建议同时固定 `TOTP_ENCRYPTION_KEY`，避免重启后 TOTP 密钥无法解密。
 
-可以在服务器上用下面的命令生成一份用于 1Panel 的环境变量，再把输出贴进 1Panel；命令只读取旧配置，不修改数据：
+可以在服务器上用下面的命令生成一份用于 1Panel 的真实环境变量文件；命令只读取旧配置，不修改数据：
 
 ```sh
-python3 - <<'PY'
+mkdir -p /opt/sub2api/docker-deploy
+python3 - <<'PY' > /opt/sub2api/docker-deploy/1panel.env
 from pathlib import Path
 import re
 
@@ -124,6 +125,19 @@ print("SECURITY_URL_ALLOWLIST_ENABLED=false")
 print("SECURITY_URL_ALLOWLIST_ALLOW_INSECURE_HTTP=false")
 print("SECURITY_URL_ALLOWLIST_ALLOW_PRIVATE_HOSTS=false")
 PY
+chmod 600 /opt/sub2api/docker-deploy/1panel.env
+```
+
+查看并复制真实环境变量到 1Panel：
+
+```sh
+cat /opt/sub2api/docker-deploy/1panel.env
+```
+
+如果只想确认字段是否齐全，避免在终端里显示密钥，可以用脱敏查看：
+
+```sh
+sed -E 's/(PASSWORD|SECRET|KEY)=.*/\1=***MASKED***/I' /opt/sub2api/docker-deploy/1panel.env
 ```
 
 ### 临时端口验证
