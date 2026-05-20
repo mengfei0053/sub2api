@@ -19,6 +19,8 @@ deploy_ebeeai/.env.example
 3. 把环境变量中的占位值替换成生产环境旧配置的真实值。
 4. 保存后先拉取镜像，再启动编排。
 
+不要保留 `replace-with-*` 或 `change-me` 这类占位值。Compose 环境变量会覆盖 `/app/data/config.yaml`，如果 `DATABASE_PASSWORD` 填错，即使挂载的旧配置文件里密码正确，应用也会因为 PostgreSQL 密码错误而启动失败。
+
 需要从生产环境 `/opt/sub2api/config.yaml` 复制或确认的值：
 
 - `DATABASE_USER`
@@ -74,6 +76,55 @@ cp -a /opt/sub2api/.installed /opt/sub2api/docker-data/.installed 2>/dev/null ||
 ```
 
 如果旧配置中 `redis.password` 有值，`.env` 中的 `REDIS_PASSWORD` 必须填同一个值。若旧库里已有启用 2FA 的用户，建议同时固定 `TOTP_ENCRYPTION_KEY`，避免重启后 TOTP 密钥无法解密。
+
+可以在服务器上用下面的命令生成一份用于 1Panel 的环境变量，再把输出贴进 1Panel；命令只读取旧配置，不修改数据：
+
+```sh
+python3 - <<'PY'
+from pathlib import Path
+import re
+
+src = Path("/opt/sub2api/config.yaml").read_text()
+vals = {}
+section = None
+for line in src.splitlines():
+    if not line.strip() or line.lstrip().startswith("#"):
+        continue
+    if not line.startswith((" ", "\t")) and line.rstrip().endswith(":"):
+        section = line.strip()[:-1]
+        continue
+    m = re.match(r"\s*([A-Za-z0-9_.-]+):\s*(.*?)\s*$", line)
+    if section and m:
+        vals[f"{section}.{m.group(1)}"] = m.group(2).strip().strip('"').strip("'")
+
+print("SUB2API_IMAGE=ghcr.io/mengfei0053/sub2api-ebeeai")
+print("SUB2API_VERSION=0.1.127_0.0.2")
+print("SUB2API_CONTAINER_NAME=sub2api")
+print("SUB2API_BIND_HOST=0.0.0.0")
+print("SUB2API_HOST_PORT=8080")
+print("SUB2API_DATA_DIR=/opt/sub2api/docker-data")
+print("ONEPANEL_NETWORK=1panel-network")
+print("DATABASE_HOST=postgresql")
+print("DATABASE_PORT=5432")
+print(f"DATABASE_USER={vals.get('database.user', '')}")
+print(f"DATABASE_PASSWORD={vals.get('database.password', '')}")
+print(f"DATABASE_DBNAME={vals.get('database.dbname', 'sub2api')}")
+print(f"DATABASE_SSLMODE={vals.get('database.sslmode', 'disable')}")
+print("REDIS_HOST=redis")
+print("REDIS_PORT=6379")
+print(f"REDIS_PASSWORD={vals.get('redis.password', '')}")
+print(f"REDIS_DB={vals.get('redis.db', '0')}")
+print(f"REDIS_ENABLE_TLS={vals.get('redis.enable_tls', 'false')}")
+print(f"JWT_SECRET={vals.get('jwt.secret', '')}")
+print(f"JWT_EXPIRE_HOUR={vals.get('jwt.expire_hour', '24')}")
+print("TOTP_ENCRYPTION_KEY=")
+print("RUN_MODE=standard")
+print(f"TZ={vals.get('timezone', 'Asia/Shanghai')}")
+print("SECURITY_URL_ALLOWLIST_ENABLED=false")
+print("SECURITY_URL_ALLOWLIST_ALLOW_INSECURE_HTTP=false")
+print("SECURITY_URL_ALLOWLIST_ALLOW_PRIVATE_HOSTS=false")
+PY
+```
 
 ### 临时端口验证
 
