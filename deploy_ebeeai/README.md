@@ -18,17 +18,12 @@ cp .env.example .env
 - `REDIS_PASSWORD`
 - `JWT_SECRET`
 - `TOTP_ENCRYPTION_KEY`，如果生产环境的 2FA 或支付恢复 token 依赖它
+- `SUB2API_IMAGE` 和 `SUB2API_VERSION`，指向 GitHub Actions 推送到 GHCR 的镜像
 
 这套部署默认使用美国东部时区：
 
 ```text
 America/New_York
-```
-
-本地构建镜像：
-
-```sh
-docker compose --env-file .env build sub2api
 ```
 
 第一次从 systemd 切换到 Docker 前，先在服务器上停掉旧服务：
@@ -41,6 +36,7 @@ systemctl disable sub2api
 启动容器：
 
 ```sh
+docker compose --env-file .env pull sub2api
 docker compose --env-file .env up -d sub2api
 ```
 
