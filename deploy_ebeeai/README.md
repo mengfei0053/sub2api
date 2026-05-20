@@ -3,39 +3,127 @@
 这个目录存放 EbeeAI 专用的 Docker 部署文件。这里的文件不会改动仓库原有的
 `Dockerfile` 或 `deploy/docker-compose*.yml`。
 
-## 首次部署
+## 发布到 1Panel 容器编排
 
-以下命令都在 `deploy_ebeeai` 目录下执行：
+推荐把本目录的两份文件作为 1Panel 容器编排的来源：
 
-```sh
-cp .env.example .env
+```text
+deploy_ebeeai/docker-compose.yml
+deploy_ebeeai/.env.example
 ```
 
-编辑 `.env`，把生产环境 `/opt/sub2api/config.yaml` 里的现有配置复制过来，尤其是：
+在 1Panel 中新建或编辑容器编排：
+
+1. 将 `docker-compose.yml` 的完整内容粘贴到编排 YAML。
+2. 将 `.env.example` 的完整内容粘贴到编排环境变量。
+3. 把环境变量中的占位值替换成生产环境旧配置的真实值。
+4. 保存后先拉取镜像，再启动编排。
+
+需要从生产环境 `/opt/sub2api/config.yaml` 复制或确认的值：
 
 - `DATABASE_USER`
 - `DATABASE_PASSWORD`
 - `REDIS_PASSWORD`
 - `JWT_SECRET`
+- `JWT_EXPIRE_HOUR`
 - `TOTP_ENCRYPTION_KEY`，如果生产环境的 2FA 或支付恢复 token 依赖它
 - `SUB2API_IMAGE` 和 `SUB2API_VERSION`，指向 GitHub Actions 推送到 GHCR 的镜像
 
-这套部署默认使用美国东部时区：
+这套部署默认复用 1Panel 的外部 PostgreSQL/Redis，不会创建新的数据库容器。默认网络和主机名如下：
 
 ```text
-America/New_York
+ONEPANEL_NETWORK=1panel-network
+DATABASE_HOST=postgresql
+REDIS_HOST=redis
 ```
 
-第一次从 systemd 切换到 Docker 前，先在服务器上停掉旧服务：
+如果旧 1Panel 容器没有 `postgresql` / `redis` 网络别名，也可以把 `DATABASE_HOST` / `REDIS_HOST` 改成实际容器名，例如 `1Panel-postgresql-xxxx`。
+
+这套部署默认使用 `Asia/Shanghai`，和旧 `/opt/sub2api/config.yaml` 保持一致。
+
+## 从 systemd 迁移到 Docker
+
+第一次切换前，先在服务器备份旧数据：
+
+```sh
+stamp=$(date +%Y%m%d-%H%M%S)
+backup_dir=/opt/sub2api/backups/pre-docker-$stamp
+mkdir -p "$backup_dir"
+chmod 700 "$backup_dir"
+
+cp -a /opt/sub2api/config.yaml "$backup_dir/config.yaml"
+tar -C /opt/sub2api -czf "$backup_dir/sub2api-data.tgz" data
+
+docker exec <postgres-container> pg_dump -U <database-user> -d sub2api -Fc \
+  > "$backup_dir/sub2api-postgres.dump"
+
+tar -C /opt/1panel/apps/redis/redis -czf "$backup_dir/redis-data.tgz" data conf
+```
+
+准备 Docker 使用的数据目录。不要直接挂载旧 `config.yaml`，因为旧配置里的 `database.host: localhost` 和 `redis.host: localhost` 在容器内会指向容器自己：
+
+```sh
+mkdir -p /opt/sub2api/docker-data
+cp -a /opt/sub2api/data/. /opt/sub2api/docker-data/
+cp -a /opt/sub2api/config.yaml /opt/sub2api/docker-data/config.yaml
+cp -a /opt/sub2api/.installed /opt/sub2api/docker-data/.installed 2>/dev/null || true
+
+# 手动编辑 /opt/sub2api/docker-data/config.yaml：
+# database.host 改成 postgresql
+# redis.host 改成 redis
+```
+
+如果旧配置中 `redis.password` 有值，`.env` 中的 `REDIS_PASSWORD` 必须填同一个值。若旧库里已有启用 2FA 的用户，建议同时固定 `TOTP_ENCRYPTION_KEY`，避免重启后 TOTP 密钥无法解密。
+
+### 临时端口验证
+
+在 1Panel 编排环境变量中先设置临时端口，不影响旧 systemd 服务：
+
+```text
+SUB2API_BIND_HOST=127.0.0.1
+SUB2API_HOST_PORT=18080
+```
+
+启动编排后验证：
+
+```sh
+curl -fsS http://127.0.0.1:18080/health
+docker logs --tail=100 sub2api
+```
+
+验证通过后，在 1Panel 停止这套临时编排。
+
+如果使用命令行，也可以这样验证：
+
+```sh
+SUB2API_BIND_HOST=127.0.0.1
+SUB2API_HOST_PORT=18080
+docker compose --env-file .env up -d sub2api
+curl -fsS http://127.0.0.1:18080/health
+docker compose --env-file .env down
+```
+
+### 正式接管 8080
+
+验证成功后，再停掉旧 systemd 服务：
 
 ```sh
 systemctl stop sub2api
 systemctl disable sub2api
 ```
 
-启动容器：
+然后在 1Panel 编排环境变量中改回正式端口：
+
+```text
+SUB2API_BIND_HOST=0.0.0.0
+SUB2API_HOST_PORT=8080
+```
+
+重新启动编排。命令行等价操作如下：
 
 ```sh
+SUB2API_BIND_HOST=0.0.0.0
+SUB2API_HOST_PORT=8080
 docker compose --env-file .env pull sub2api
 docker compose --env-file .env up -d sub2api
 ```
@@ -83,7 +171,7 @@ SUB2API_IMAGE=ghcr.io/<github-owner>/sub2api-ebeeai
 SUB2API_VERSION=<上游版本>_<EbeeAI版本>
 ```
 
-然后执行：
+如果使用 1Panel 容器编排，在环境变量中更新 `SUB2API_VERSION`，保存后执行“拉取镜像/重新创建”。命令行等价操作如下：
 
 ```sh
 docker compose --env-file .env pull sub2api
@@ -93,7 +181,7 @@ curl -fsS http://127.0.0.1:8080/health
 
 ## 回滚
 
-把 `.env` 里的 `SUB2API_VERSION` 改回上一个可用版本，然后执行：
+把 1Panel 编排环境变量里的 `SUB2API_VERSION` 改回上一个可用版本，保存后重新创建容器。命令行等价操作如下：
 
 ```sh
 docker compose --env-file .env up -d sub2api
