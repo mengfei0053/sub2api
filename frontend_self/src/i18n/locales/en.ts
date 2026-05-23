@@ -107,6 +107,78 @@ export default {
     },
     footer: {
       allRightsReserved: 'All rights reserved.'
+    },
+    ebeeai: {
+      nav: {
+        features: 'Features',
+        solutions: 'Solutions',
+        pricing: 'Pricing',
+        docs: 'Documentation',
+        getStarted: 'Get Started',
+        menu: 'Menu'
+      },
+      hero: {
+        badge: '{name} Gateway is live',
+        title: 'Enterprise AI Model Access',
+        titleLine2: '& Unified Gateway',
+        subtitle:
+          'High performance, multi-model support, security compliance, and cost control. Build reliable AI infrastructure for your organization.',
+        trial: 'Request a Trial',
+        readDocs: 'Read Documentation'
+      },
+      features: {
+        title: 'Core Capabilities',
+        subtitle: 'Enterprise-grade standards for efficient, stable AI services.',
+        items: {
+          performance: {
+            title: 'High-Performance Gateway',
+            desc: 'Sub-50ms latency and high-throughput architecture for concurrent workloads and stable model delivery.'
+          },
+          multiModel: {
+            title: 'Multi-Model Support',
+            desc: 'One unified API for OpenAI, Claude, Gemini, and leading open models with lower switching cost.'
+          },
+          security: {
+            title: 'Security & Compliance',
+            desc: 'Content filtering, PII redaction, fine-grained access control, and audit logs for enterprise compliance.'
+          },
+          cost: {
+            title: 'Cost Control',
+            desc: 'Semantic caching, request batching, and routing optimization to reduce API and compute spend.'
+          }
+        }
+      },
+      stats: {
+        title: 'Proven at Scale',
+        subtitle: 'Built for complex enterprise environments with financial-grade reliability.',
+        sla: 'SLA Availability',
+        latency: 'Gateway Latency',
+        tokens: 'Tokens Processed Daily',
+        breaches: 'Data Breaches',
+        logTitle: 'Live Routing Log'
+      },
+      partners: {
+        label: 'Trusted by industry leaders'
+      },
+      cta: {
+        title: 'Ready to upgrade your',
+        titleLine2: 'AI infrastructure?',
+        button: 'Integrate {name} Gateway'
+      },
+      footer: {
+        privacy: 'Privacy Policy',
+        terms: 'Terms of Service',
+        security: 'Security',
+        status: 'Status'
+      },
+      routingLog: {
+        openai: 'Route: OpenAI_GPT4',
+        cache: 'Cache Hit',
+        claude: 'Route: Claude_3_Opus',
+        blocked: 'Filter: Sensitive Block',
+        llama: 'Route: Llama_3_Local',
+        blockedTag: 'BLOCKED'
+      }
     }
   },
 
