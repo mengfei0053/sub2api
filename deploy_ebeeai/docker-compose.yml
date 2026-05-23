@@ -3,6 +3,13 @@ name: sub2api-ebeeai
 services:
   sub2api:
     image: ${SUB2API_IMAGE:?SUB2API_IMAGE is required}:${SUB2API_VERSION:?SUB2API_VERSION is required}
+    # Production images from GHCR are built with frontend_self/ (see deploy_ebeeai/Dockerfile).
+    # For local rebuilds: docker compose --env-file .env build sub2api
+    build:
+      context: ..
+      dockerfile: deploy_ebeeai/Dockerfile
+      args:
+        FRONTEND_DIR: frontend_self
     container_name: ${SUB2API_CONTAINER_NAME:-sub2api}
     restart: unless-stopped
     init: true
