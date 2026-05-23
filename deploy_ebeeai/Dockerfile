@@ -10,17 +10,21 @@ ARG ALPINE_IMAGE=alpine:3.21
 ARG POSTGRES_IMAGE=postgres:18.3-alpine
 ARG GOPROXY=https://goproxy.cn,direct
 ARG GOSUMDB=sum.golang.google.cn
+# EbeeAI images use the customized UI fork; upstream-aligned frontend/ stays untouched.
+ARG FRONTEND_DIR=frontend_self
 
 FROM ${NODE_IMAGE} AS frontend-builder
+
+ARG FRONTEND_DIR=frontend_self
 
 WORKDIR /app/frontend
 
 RUN corepack enable && corepack prepare pnpm@9 --activate
 
-COPY frontend/package.json frontend/pnpm-lock.yaml ./
+COPY ${FRONTEND_DIR}/package.json ${FRONTEND_DIR}/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-COPY frontend/ ./
+COPY ${FRONTEND_DIR}/ ./
 RUN pnpm run build
 
 FROM ${GOLANG_IMAGE} AS backend-builder

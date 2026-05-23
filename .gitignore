@@ -34,6 +34,9 @@ backend/.gocache/
 node_modules/
 frontend/node_modules/
 frontend/dist/
+frontend_self/node_modules/
+frontend_self/dist/
+frontend_self/coverage/
 *.local
 *.tsbuildinfo
 vite.config.d.ts
