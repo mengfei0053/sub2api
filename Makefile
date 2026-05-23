@@ -1,4 +1,4 @@
-.PHONY: build build-backend build-frontend build-datamanagementd test test-backend test-frontend test-frontend-critical test-datamanagementd secret-scan
+.PHONY: build build-backend build-frontend build-datamanagementd test test-backend test-frontend test-frontend-critical test-datamanagementd secret-scan check-frontend-self-sync
 
 FRONTEND_CRITICAL_VITEST := \
 	src/views/auth/__tests__/LinuxDoCallbackView.spec.ts \
@@ -42,3 +42,7 @@ test-datamanagementd:
 
 secret-scan:
 	@python3 tools/secret_scan.py
+
+# After syncing upstream: compare frontend/ vs frontend_self/ and list frontend changes
+check-frontend-self-sync:
+	@bash tools/check_frontend_self_sync.sh
