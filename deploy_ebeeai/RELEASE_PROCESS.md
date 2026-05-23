@@ -42,65 +42,69 @@ EbeeAI 服务版本：0.0.1
 
 GitHub Actions 镜像 workflow 只会在推送 `v*` tag 时发布镜像，所以这个 tag 格式会触发镜像构建和推送。
 
-## 推荐流程：基于上游 Tag 新建分支
+## 标准流程：从 main_self rebase 到上游 tag 创建 release 分支
 
-升级到新的上游版本时，推荐使用这个流程。它能保证新 release 分支的 base 精确等于上游 tag。
+`main_self` 是 EbeeAI 自定义提交的长期维护分支。每次发布时，将 `main_self` 上的自定义提交 rebase 到最新上游 tag，再从结果创建 release 分支。上游提交在前，EbeeAI 提交在后。
 
-1. 拉取两个远程仓库和 tag：
+### 前置条件
 
-```sh
-git fetch upstream --tags
-git fetch origin
-```
+`main` 已与上游同步（见同步上游分支流程）。
 
-2. 基于上游 tag 创建新的 release 分支：
+### 步骤
 
-```sh
-export VERSION=0.1.128
-git switch -c release/v${VERSION} upstream/v${VERSION}
-```
-
-3. 从上一个 release 分支 cherry-pick EbeeAI 自己的提交：
+1. 确认版本号并设置变量：
 
 ```sh
-git log --oneline upstream/v0.1.127..origin/release/v0.1.127
-git cherry-pick <commit-1> <commit-2> <commit-3>
+export VERSION=0.1.130
+export EBEEAI_VERSION=0.0.1
 ```
 
-当前 Docker/GHCR 部署层至少需要包含新增或修改这些路径的提交：
-
-```text
-.github/workflows/ebeeai-image.yml
-deploy_ebeeai/**
-```
-
-4. 如果出现冲突，手动解决：
+2. 将 `main_self` 上的 EbeeAI 提交 rebase 到上游 tag：
 
 ```sh
-git status
+git checkout main_self
+git rebase --onto upstream/v${VERSION} main
+```
+
+`--onto upstream/v${VERSION}` 是新的 base；`main` 是旧 base（只有在 main_self 上而不在 main 上的提交会被 replay）。
+
+3. 如果出现冲突，手动解决：
+
+```sh
 git diff --name-only --diff-filter=U
 # 编辑冲突文件
 git add <resolved-files>
-git cherry-pick --continue
+git rebase --continue
 ```
 
-5. 验证：
+4. 强推更新后的 `main_self`（rebase 改写了历史）：
+
+```sh
+git push origin main_self --force-with-lease
+```
+
+5. 从当前 `main_self` 创建 release 分支：
+
+```sh
+git switch -c release/v${VERSION}
+```
+
+6. 验证：
 
 ```sh
 docker compose --env-file deploy_ebeeai/.env.example -f deploy_ebeeai/docker-compose.yml config --quiet
 docker buildx build --check -f deploy_ebeeai/Dockerfile .
 ```
 
-6. 推送 release 分支：
+7. 推送 release 分支：
 
 ```sh
 git push -u origin release/v${VERSION}
 ```
 
-7. 推送发布 tag，触发 GHCR 镜像发布：
+8. 推送发布 tag，触发 GHCR 镜像发布：
 
 ```sh
-export EBEEAI_VERSION=0.0.1
 git tag v${VERSION}_${EBEEAI_VERSION}
 git push origin v${VERSION}_${EBEEAI_VERSION}
 ```
@@ -111,56 +115,6 @@ git push origin v${VERSION}_${EBEEAI_VERSION}
 ghcr.io/<github-owner>/sub2api-ebeeai:${VERSION}_${EBEEAI_VERSION}
 ghcr.io/<github-owner>/sub2api-ebeeai:sha-<commit>
 ghcr.io/<github-owner>/sub2api-ebeeai:latest
-```
-
-## 替代流程：把上一个 Release Rebase 到新的上游 Tag
-
-如果上一个 release 分支上只包含 EbeeAI 自己的提交，可以用这个流程把这些提交迁移到新的上游 tag 上。
-
-1. 拉取两个远程仓库和 tag：
-
-```sh
-git fetch upstream --tags
-git fetch origin
-```
-
-2. 从上一个 release 分支创建新分支：
-
-```sh
-export OLD_VERSION=0.1.127
-export NEW_VERSION=0.1.128
-git switch -c release/v${NEW_VERSION} origin/release/v${OLD_VERSION}
-```
-
-3. 只把 EbeeAI 增量从旧上游 tag rebase 到新上游 tag：
-
-```sh
-git rebase --onto upstream/v${NEW_VERSION} upstream/v${OLD_VERSION}
-```
-
-这个命令会保留你的 EbeeAI 提交，同时替换它们下面的上游 base。
-
-4. 如果出现冲突，停下来手动解决：
-
-```sh
-git diff --name-only --diff-filter=U
-# 编辑冲突文件
-git add <resolved-files>
-git rebase --continue
-```
-
-除非确认某个提交已经过时，否则不要随意 skip 冲突提交。
-
-5. 验证、推送分支，然后推送发布 tag：
-
-```sh
-docker compose --env-file deploy_ebeeai/.env.example -f deploy_ebeeai/docker-compose.yml config --quiet
-docker buildx build --check -f deploy_ebeeai/Dockerfile .
-
-export EBEEAI_VERSION=0.0.1
-git push -u origin release/v${NEW_VERSION}
-git tag v${NEW_VERSION}_${EBEEAI_VERSION}
-git push origin v${NEW_VERSION}_${EBEEAI_VERSION}
 ```
 
 ## 运维注意事项
