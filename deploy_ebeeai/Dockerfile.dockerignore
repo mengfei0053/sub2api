@@ -6,6 +6,8 @@
 
 **/node_modules
 frontend/dist
+frontend_self/dist
+frontend_self/coverage
 backend/internal/web/dist/*
 !backend/internal/web/dist/.keep
 

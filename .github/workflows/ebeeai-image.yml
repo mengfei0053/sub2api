@@ -68,6 +68,7 @@ jobs:
             VERSION=${{ steps.meta.outputs.version }}
             COMMIT=${{ steps.meta.outputs.commit }}
             DATE=${{ steps.meta.outputs.build_date }}
+            FRONTEND_DIR=frontend_self
             GOPROXY=https://proxy.golang.org,direct
             GOSUMDB=sum.golang.org
           cache-from: type=gha,scope=ebeeai-image-amd64

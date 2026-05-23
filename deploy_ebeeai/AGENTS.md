@@ -12,3 +12,4 @@
 ## Local Notes
 - Check local README files before changing behavior or docs in this subtree.
 - YAML files are configuration surfaces; preserve comments and ordering when possible.
+- EbeeAI Docker builds embed `frontend_self/`, not `frontend/` (`deploy_ebeeai/Dockerfile`, `FRONTEND_DIR=frontend_self`).
