@@ -47,24 +47,40 @@ export default {
           900: '#0f172a',
           950: '#020617'
         },
-        // EBeeAI / Precision Enterprise landing (Stitch)
+        // High-End AI Gateway (DESIGN.md)
         enterprise: {
           background: '#fcf9f8',
           surface: '#fcf9f8',
-          primary: '#000000',
-          'on-primary': '#ffffff',
-          secondary: '#5e5e5e',
-          'surface-container-low': '#f6f3f2',
+          'surface-dim': '#dcd9d9',
+          'surface-bright': '#fcf9f8',
           'surface-container-lowest': '#ffffff',
+          'surface-container-low': '#f6f3f2',
+          'surface-container': '#f0eded',
           'surface-container-high': '#eae7e7',
           'surface-container-highest': '#e5e2e1',
-          'outline-variant': '#cfc4c5',
-          outline: '#7e7576',
+          'surface-variant': '#e5e2e1',
           'on-surface': '#1c1b1b',
           'on-surface-variant': '#4c4546',
           'on-background': '#1c1b1b',
+          'inverse-surface': '#313030',
+          'inverse-on-surface': '#f3f0ef',
+          outline: '#7e7576',
+          'outline-variant': '#cfc4c5',
+          'surface-tint': '#5e5e5e',
+          primary: '#000000',
+          'on-primary': '#ffffff',
+          'primary-container': '#1b1b1b',
+          'on-primary-container': '#848484',
+          'inverse-primary': '#c6c6c6',
+          secondary: '#5e5e5e',
+          'on-secondary': '#ffffff',
+          'secondary-container': '#e1dfdf',
+          'on-secondary-container': '#626262',
+          tertiary: '#000000',
           error: '#ba1a1a',
-          'primary-container': '#1b1b1b'
+          'on-error': '#ffffff',
+          'error-container': '#ffdad6',
+          'on-error-container': '#93000a'
         }
       },
       maxWidth: {
@@ -76,6 +92,7 @@ export default {
       },
       fontFamily: {
         sans: [
+          'Geist',
           'system-ui',
           '-apple-system',
           'BlinkMacSystemFont',
@@ -96,7 +113,8 @@ export default {
         glow: '0 0 20px rgba(20, 184, 166, 0.25)',
         'glow-lg': '0 0 40px rgba(20, 184, 166, 0.35)',
         card: '0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06)',
-        'card-hover': '0 10px 40px rgba(0, 0, 0, 0.08)',
+        'card-hover': '0 4px 12px rgba(0, 0, 0, 0.05)',
+        enterprise: '0 4px 12px rgba(0, 0, 0, 0.05)',
         'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.1)'
       },
       backgroundImage: {
