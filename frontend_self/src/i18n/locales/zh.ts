@@ -107,6 +107,78 @@ export default {
     },
     footer: {
       allRightsReserved: '保留所有权利。'
+    },
+    ebeeai: {
+      nav: {
+        features: '核心能力',
+        solutions: '数据实力',
+        pricing: '定价',
+        docs: '文档',
+        getStarted: '立即开始',
+        menu: '菜单'
+      },
+      hero: {
+        badge: '{name} Gateway 现已上线',
+        title: '企业级 AI 模型安全接入',
+        titleLine2: '与统一网关',
+        subtitle:
+          '高性能、多模型适配、安全合规、极致成本控制。构建稳健的 AI 基础设施，赋能企业智能升级。',
+        trial: '立即申请试用',
+        readDocs: '阅读文档'
+      },
+      features: {
+        title: '核心能力',
+        subtitle: '企业级标准，全方位保障 AI 服务的高效稳定。',
+        items: {
+          performance: {
+            title: '高性能网关',
+            desc: '亚毫秒级延迟（<50ms），高吞吐量架构设计，轻松应对高并发调用场景，确保大模型服务稳定流畅。'
+          },
+          multiModel: {
+            title: '多模型适配',
+            desc: '统一 API 接口，无缝对接 OpenAI、Claude、Gemini 及主流开源大模型，降低模型切换与维护成本。'
+          },
+          security: {
+            title: '安全与合规',
+            desc: '内置内容过滤、敏感信息脱敏及细粒度权限控制，支持详尽审计日志，满足企业级数据安全与合规要求。'
+          },
+          cost: {
+            title: '成本控制',
+            desc: '智能语义缓存、请求合并与路由策略优化，多维度资源管理，显著降低大模型 API 调用及计算成本。'
+          }
+        }
+      },
+      stats: {
+        title: '数据证明实力',
+        subtitle: '专为复杂企业环境设计，提供金融级的稳定性与可扩展性。',
+        sla: 'SLA 可用性',
+        latency: '网关延迟',
+        tokens: '日处理 Token',
+        breaches: '数据泄露事件',
+        logTitle: '实时路由日志'
+      },
+      partners: {
+        label: '行业领先企业的共同选择'
+      },
+      cta: {
+        title: '准备好升级您的',
+        titleLine2: 'AI 基础设施了吗？',
+        button: '开始集成 {name} Gateway'
+      },
+      footer: {
+        privacy: '隐私政策',
+        terms: '服务条款',
+        security: '安全',
+        status: '状态'
+      },
+      routingLog: {
+        openai: '路由: OpenAI_GPT4',
+        cache: '缓存命中',
+        claude: '路由: Claude_3_Opus',
+        blocked: '过滤: 敏感拦截',
+        llama: '路由: Llama_3_Local',
+        blockedTag: '已拦截'
+      }
     }
   },
 
