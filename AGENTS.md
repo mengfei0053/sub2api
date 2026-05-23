@@ -23,5 +23,6 @@
 ## Project Commands
 - Backend: `cd backend && go test ./...`, `cd backend && go test -tags=unit ./...`, `cd backend && go test -tags=integration ./...`.
 - Frontend: `cd frontend && pnpm install`, `pnpm run typecheck`, `pnpm run lint:check`, `pnpm run test:run`, `pnpm run build`.
+- Frontend (local UI fork): `frontend_self/` mirrors `frontend/` for customized UI work; after syncing upstream, run `make check-frontend-self-sync` and update `frontend_self/` when needed (see `frontend_self/README.md`, `DEV_GUIDE.md`).
 - Ent generation: `cd backend && go generate ./ent` after editing `backend/ent/schema`.
 - Root wrappers: `make test`, `make build`, and focused Makefile targets where available.
