@@ -3,6 +3,10 @@
 这个目录存放 EbeeAI 专用的 Docker 部署文件。这里的文件不会改动仓库原有的
 `Dockerfile` 或 `deploy/docker-compose*.yml`。
 
+EbeeAI 镜像的前端构建源为 `frontend_self/`（本地 UI 定制副本），不是上游对齐的
+`frontend/`。发布前若刚同步 upstream，请先运行 `make check-frontend-self-sync` 确认
+`frontend_self/` 已跟进必要的 API/路由/i18n 变更。
+
 ## 发布到 1Panel 容器编排
 
 推荐把本目录的两份文件作为 1Panel 容器编排的来源：
