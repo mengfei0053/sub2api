@@ -763,3 +763,155 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+/* High-End AI Gateway theme (DESIGN.md) — overrides auth/console primitives */
+@layer base {
+  body {
+    @apply bg-enterprise-background text-enterprise-on-background;
+    font-family: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .dark body {
+    @apply bg-[#131316] text-[#e4e1e5];
+  }
+
+  ::selection {
+    @apply bg-enterprise-primary/10 text-enterprise-on-surface;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply rounded focus:ring-enterprise-primary/30 focus:ring-offset-enterprise-background;
+  }
+
+  .btn-primary {
+    @apply border border-enterprise-primary bg-enterprise-primary text-enterprise-on-primary shadow-none;
+    @apply hover:bg-enterprise-primary-container hover:shadow-sm;
+    background-image: none;
+  }
+
+  .btn-secondary {
+    @apply border-enterprise-outline-variant bg-enterprise-surface-container-lowest text-enterprise-on-surface;
+    @apply hover:border-enterprise-primary hover:bg-enterprise-surface-container-low;
+  }
+
+  .btn-ghost {
+    @apply text-enterprise-secondary hover:bg-enterprise-surface-container-low hover:text-enterprise-on-surface;
+  }
+
+  .input {
+    @apply rounded border-enterprise-outline-variant bg-enterprise-surface-container-lowest text-enterprise-on-surface;
+    @apply placeholder:text-enterprise-outline;
+    @apply focus:border-enterprise-primary focus:ring-enterprise-primary/20;
+  }
+
+  .input-label {
+    @apply text-enterprise-on-surface-variant;
+  }
+
+  .input-hint {
+    @apply text-enterprise-secondary;
+  }
+
+  .glass,
+  .card-glass {
+    @apply border border-enterprise-outline-variant/60 bg-enterprise-surface-container-lowest/95 shadow-sm backdrop-blur-md;
+  }
+
+  .card {
+    @apply rounded-lg border-enterprise-outline-variant/60 bg-enterprise-surface-container-lowest shadow-sm;
+  }
+
+  .sidebar {
+    @apply border-enterprise-outline-variant/60 bg-enterprise-surface-container-lowest;
+  }
+
+  .sidebar-header {
+    @apply border-enterprise-outline-variant/40;
+  }
+
+  .sidebar-link {
+    @apply rounded text-enterprise-secondary;
+    @apply hover:bg-enterprise-surface-container-low hover:text-enterprise-on-surface;
+  }
+
+  .sidebar-link-active {
+    @apply border border-enterprise-outline-variant/50 bg-enterprise-surface-container-low text-enterprise-primary;
+    @apply hover:bg-enterprise-surface-container;
+  }
+
+  .sidebar-section-title {
+    @apply text-enterprise-outline;
+  }
+
+  .page-title {
+    @apply text-enterprise-on-surface;
+  }
+
+  .page-description {
+    @apply text-enterprise-secondary;
+  }
+
+  .stat-value {
+    @apply text-enterprise-on-surface;
+  }
+
+  .stat-label {
+    @apply text-enterprise-secondary;
+  }
+
+  .badge-primary {
+    @apply bg-enterprise-surface-container-high text-enterprise-on-surface;
+  }
+
+  .progress-bar {
+    @apply bg-enterprise-primary;
+    background-image: none;
+  }
+
+  .switch-active {
+    @apply bg-enterprise-primary;
+  }
+
+  .code {
+    @apply bg-enterprise-surface-container-low text-enterprise-on-surface;
+  }
+
+  .text-gradient {
+    @apply bg-none text-enterprise-primary;
+    -webkit-text-fill-color: currentColor;
+  }
+
+  .enterprise-dot-grid {
+    background-image: radial-gradient(#cfc4c5 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: -12px -12px;
+  }
+
+  .dark .enterprise-dot-grid {
+    background-image: radial-gradient(#444748 1px, transparent 1px);
+  }
+
+  .enterprise-auth-card {
+    @apply rounded-lg border border-enterprise-outline-variant/60 bg-enterprise-surface-container-lowest p-8 shadow-sm;
+  }
+
+  .dropdown {
+    @apply rounded-lg border border-enterprise-outline-variant/60 bg-enterprise-surface-container-lowest shadow-enterprise;
+  }
+
+  .dropdown-item {
+    @apply text-enterprise-on-surface-variant hover:bg-enterprise-surface-container-low hover:text-enterprise-on-surface;
+  }
+}
+
+@layer utilities {
+  .text-link {
+    @apply font-medium text-enterprise-primary transition-colors hover:text-enterprise-primary-container;
+  }
+
+  .text-muted {
+    @apply text-enterprise-secondary;
+  }
+}
