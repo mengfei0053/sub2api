@@ -32,15 +32,6 @@
 
         <div class="flex items-center gap-2 md:gap-3">
           <LocaleSwitcher />
-          <button
-            type="button"
-            class="hidden rounded p-2 text-enterprise-secondary transition-colors hover:bg-enterprise-surface-container-low hover:text-enterprise-primary md:inline-flex"
-            :title="props.isDark ? t('home.switchToLight') : t('home.switchToDark')"
-            @click="toggleTheme"
-          >
-            <Icon v-if="props.isDark" name="sun" size="md" />
-            <Icon v-else name="moon" size="md" />
-          </button>
           <router-link
             :to="primaryCtaPath"
             class="hidden items-center justify-center rounded border border-enterprise-primary bg-enterprise-primary px-6 py-2 text-sm font-medium text-enterprise-on-primary transition-colors hover:bg-enterprise-surface hover:text-enterprise-primary md:inline-flex"
@@ -322,14 +313,6 @@ import { useAuthStore, useAppStore } from '@/stores'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import Icon from '@/components/icons/Icon.vue'
 
-const props = defineProps<{
-  isDark: boolean
-}>()
-
-const emit = defineEmits<{
-  toggleTheme: []
-}>()
-
 const { t } = useI18n()
 const authStore = useAuthStore()
 const appStore = useAppStore()
@@ -440,10 +423,6 @@ const footerLinks = computed(() => [
   { to: '/legal/security', label: t('home.ebeeai.footer.security') },
   { to: '/legal/status', label: t('home.ebeeai.footer.status') }
 ])
-
-function toggleTheme() {
-  emit('toggleTheme')
-}
 </script>
 
 <style scoped>
@@ -474,49 +453,5 @@ function toggleTheme() {
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px);
   border: 1px solid #e5e2e1;
-}
-
-:global(.dark) .ebeeai-home {
-  background-color: #131316;
-  color: #e4e1e5;
-}
-
-:global(.dark) .ebeeai-home .bg-enterprise-background,
-:global(.dark) .ebeeai-home .bg-enterprise-surface {
-  background-color: #131316;
-}
-
-:global(.dark) .ebeeai-home .bg-enterprise-surface-container-lowest {
-  background-color: #0e0e11;
-}
-
-:global(.dark) .ebeeai-home .bg-enterprise-surface-container-low {
-  background-color: #1b1b1e;
-}
-
-:global(.dark) .ebeeai-home .bg-enterprise-surface-container-highest {
-  background-color: #353437;
-}
-
-:global(.dark) .ebeeai-home .text-enterprise-primary {
-  color: #ffffff;
-}
-
-:global(.dark) .ebeeai-home .text-enterprise-secondary,
-:global(.dark) .ebeeai-home .text-enterprise-on-surface-variant {
-  color: #c4c7c8;
-}
-
-:global(.dark) .ebeeai-home .border-enterprise-outline-variant {
-  border-color: #444748;
-}
-
-:global(.dark) .ebeeai-glass-panel {
-  background: rgba(31, 31, 34, 0.8);
-  border-color: #444748;
-}
-
-:global(.dark) .ebeeai-dot-grid {
-  background-image: radial-gradient(#444748 1px, transparent 1px);
 }
 </style>
