@@ -46,7 +46,33 @@ export default {
           800: '#1e293b',
           900: '#0f172a',
           950: '#020617'
+        },
+        // EBeeAI / Precision Enterprise landing (Stitch)
+        enterprise: {
+          background: '#fcf9f8',
+          surface: '#fcf9f8',
+          primary: '#000000',
+          'on-primary': '#ffffff',
+          secondary: '#5e5e5e',
+          'surface-container-low': '#f6f3f2',
+          'surface-container-lowest': '#ffffff',
+          'surface-container-high': '#eae7e7',
+          'surface-container-highest': '#e5e2e1',
+          'outline-variant': '#cfc4c5',
+          outline: '#7e7576',
+          'on-surface': '#1c1b1b',
+          'on-surface-variant': '#4c4546',
+          'on-background': '#1c1b1b',
+          error: '#ba1a1a',
+          'primary-container': '#1b1b1b'
         }
+      },
+      maxWidth: {
+        content: '1440px'
+      },
+      spacing: {
+        'margin-desktop': '64px',
+        'margin-mobile': '16px'
       },
       fontFamily: {
         sans: [
