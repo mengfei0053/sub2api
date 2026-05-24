@@ -1,7 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
-  darkMode: false,
+  // Tailwind 3.4 treats `darkMode: false` the same as `media`, which lets
+  // OS dark preference activate every `dark:*` utility. This fork is locked
+  // to light mode, so keep dark utilities gated behind an explicit `.dark`
+  // class that the app never adds.
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
