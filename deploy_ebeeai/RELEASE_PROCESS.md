@@ -40,7 +40,7 @@ v0.1.127_0.0.1
 EbeeAI 服务版本：0.0.1
 ```
 
-GitHub Actions 镜像 workflow 只会在推送 `v*` tag 时发布镜像，所以这个 tag 格式会触发镜像构建和推送。
+GitHub Actions 的 EbeeAI 发布 workflow 为 `.github/workflows/ebeeai-release.yml`，只会在推送 `v<上游>_<EbeeAI>` tag 时发布镜像和 GitHub Release。
 
 ## 标准流程：从 main_self rebase 到上游 tag 创建 release 分支
 
@@ -109,13 +109,16 @@ git tag v${VERSION}_${EBEEAI_VERSION}
 git push origin v${VERSION}_${EBEEAI_VERSION}
 ```
 
-这个 tag 会触发 `.github/workflows/ebeeai-image.yml`，并发布：
+这个 tag 会触发 `.github/workflows/ebeeai-release.yml`，并发布：
 
 ```text
-ghcr.io/<github-owner>/sub2api-ebeeai:${VERSION}_${EBEEAI_VERSION}
+ghcr.io/<github-owner>/sub2api-ebeeai:<上游版本>_<EbeeAI版本>
+ghcr.io/<github-owner>/sub2api-ebeeai:<上游版本>
 ghcr.io/<github-owner>/sub2api-ebeeai:sha-<commit>
 ghcr.io/<github-owner>/sub2api-ebeeai:latest
 ```
+
+同时会创建 GitHub Release，并把 `backend/cmd/server/VERSION` 同步回 `main_self`。
 
 ## 运维注意事项
 
