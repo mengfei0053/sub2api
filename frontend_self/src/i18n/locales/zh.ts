@@ -108,6 +108,13 @@ export default {
     footer: {
       allRightsReserved: '保留所有权利。'
     },
+    seo: {
+      title: '首页',
+      description:
+        'EbeeAI 企业级 AI API 网关，统一接入 Claude、GPT、Gemini 等主流大模型，提供高性能路由、安全合规与成本控制能力。',
+      defaultDescription:
+        'EbeeAI 企业级 AI API 网关，为企业提供安全、稳定、可扩展的大模型统一接入服务。'
+    },
     ebeeai: {
       nav: {
         features: '核心能力',
@@ -464,6 +471,10 @@ export default {
 
   // Auth
   auth: {
+    seo: {
+      loginDescription: '登录 EbeeAI，访问企业级 AI API 网关控制台。',
+      registerDescription: '注册 EbeeAI 账户，开始使用统一 AI 模型接入与网关服务。'
+    },
     welcomeBack: '欢迎回来',
     signInToAccount: '登录您的账户以继续',
     signIn: '登录',
