@@ -60,14 +60,14 @@
           :class="[
             'flex w-full items-center rounded-lg px-3 py-2 text-sm transition-colors',
             !selectedKeyForGroup?.group_id
-              ? 'bg-primary-50 dark:bg-primary-900/20'
-              : 'hover:bg-gray-100 dark:hover:bg-dark-700'
+              ? 'bg-enterprise-surface-container-low font-medium text-enterprise-on-surface'
+              : 'hover:bg-enterprise-surface-container-low hover:text-enterprise-on-surface'
           ]"
         >
           <span class="text-gray-500 italic">{{ t('admin.users.none') }}</span>
           <svg
             v-if="!selectedKeyForGroup?.group_id"
-            class="ml-auto h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400"
+            class="ml-auto h-4 w-4 shrink-0 text-enterprise-primary"
             fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"
           ><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
         </button>
@@ -79,8 +79,8 @@
           :class="[
             'flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors',
             selectedKeyForGroup?.group_id === group.id
-              ? 'bg-primary-50 dark:bg-primary-900/20'
-              : 'hover:bg-gray-100 dark:hover:bg-dark-700'
+              ? 'bg-enterprise-surface-container-low font-medium text-enterprise-on-surface'
+              : 'hover:bg-enterprise-surface-container-low hover:text-enterprise-on-surface'
           ]"
         >
           <GroupOptionItem
