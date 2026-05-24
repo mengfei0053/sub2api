@@ -1,7 +1,9 @@
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
-import { DEFAULT_OG_IMAGE, SITE_ORIGIN } from '@/config/seo'
+import { buildOrganizationStructuredData, DEFAULT_OG_IMAGE, SITE_ORIGIN } from '@/config/seo'
 import { i18n } from '@/i18n'
 import { resolveDocumentTitle } from '@/router/title'
+
+const STRUCTURED_DATA_SCRIPT_ID = 'ebeeai-structured-data'
 
 type SeoOptions = {
   route: RouteLocationNormalizedLoaded
@@ -31,6 +33,24 @@ function upsertLink(rel: string, href: string) {
     document.head.appendChild(element)
   }
   element.href = href
+}
+
+function upsertStructuredData(route: RouteLocationNormalizedLoaded, siteName: string | undefined, description: string) {
+  const existing = document.getElementById(STRUCTURED_DATA_SCRIPT_ID)
+
+  if (route.name !== 'Home' || !shouldIndexRoute(route)) {
+    existing?.remove()
+    return
+  }
+
+  const script = (existing as HTMLScriptElement | null) ?? document.createElement('script')
+  script.id = STRUCTURED_DATA_SCRIPT_ID
+  script.type = 'application/ld+json'
+  script.textContent = JSON.stringify(buildOrganizationStructuredData(siteName, description))
+
+  if (!existing) {
+    document.head.appendChild(script)
+  }
 }
 
 function resolveDescription(route: RouteLocationNormalizedLoaded): string {
@@ -80,4 +100,6 @@ export function applyRouteSeo({ route, siteName, customTitle }: SeoOptions): voi
   upsertMeta('twitter:title', title)
   upsertMeta('twitter:description', description)
   upsertMeta('twitter:image', DEFAULT_OG_IMAGE)
+
+  upsertStructuredData(route, siteName, description)
 }
