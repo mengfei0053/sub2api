@@ -1,13 +1,22 @@
 # frontend_self
 
-`frontend_self/` 是 [`frontend/`](../frontend/) 的本地定制副本，用于独立 UI 改造（例如 Stitch 设计稿落地），同时保持 `frontend/` 与上游 **Wei-Shaw/sub2api** 对齐。
+`frontend_self/` 是 [`frontend/`](../frontend/) 的本地定制副本，用于 EbeeAI 独立 UI 改造（例如 Stitch 设计稿落地），同时保持 `frontend/` 与上游 **Wei-Shaw/sub2api** 对齐。
+
+## 日常开发规则（必读）
+
+| 目录 | 何时修改 |
+|------|----------|
+| **`frontend_self/`** | **所有本地功能、UI、行为定制**（EbeeAI 控制台、主题、样式等）只改这里 |
+| **`frontend/`** | **仅在上游同步时**修改（`git merge upstream/main` 等），使内容与上游分支一致；**不要**为本地需求直接改此目录 |
+
+本地运行与 Docker 发布（EbeeAI）均使用 `frontend_self/` 构建，改错目录会导致线上看不到改动，或下次同步 upstream 时产生多余 diff。
 
 ## 目录关系
 
 | 目录 | 用途 |
 |------|------|
-| `frontend/` | 跟踪上游的标准前端；合并 upstream 时以这里为准 |
-| `frontend_self/` | 本地定制前端；按需从 `frontend/` 同步上游变更 |
+| `frontend/` | 跟踪上游的标准前端；**仅在上游同步时**更新，与 upstream 保持一致 |
+| `frontend_self/` | **日常开发目录**；本地定制前端；按需从 `frontend/` 同步上游变更 |
 
 ## 同步上游后必做
 
