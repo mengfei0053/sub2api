@@ -164,8 +164,8 @@
                 <button
                   @click="toggleEnabled(rule)"
                   :class="[
-                    'relative inline-flex h-4 w-7 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-                    rule.enabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
+                    'relative inline-flex h-4 w-7 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-enterprise-primary/20 focus:ring-offset-2',
+                    rule.enabled ? 'bg-enterprise-primary' : 'bg-enterprise-surface-container-high'
                   ]"
                 >
                   <span

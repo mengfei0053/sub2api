@@ -4,15 +4,13 @@
       <!-- Header with Day Switcher -->
       <div class="flex items-center justify-end">
         <div class="flex items-center gap-2">
-          <div class="flex rounded-lg border border-gray-200 dark:border-dark-600">
+          <div class="segment-control">
             <button
               v-for="d in DAYS_OPTIONS"
               :key="d"
               type="button"
-              class="px-3 py-1.5 text-xs font-medium transition-colors first:rounded-l-lg last:rounded-r-lg"
-              :class="days === d
-                ? 'bg-primary-600 text-white'
-                : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700'"
+              class="min-w-12 rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
+              :class="days === d ? 'segment-option-active' : 'segment-option'"
               @click="days = d"
             >
               {{ d }}{{ t('payment.admin.daySuffix') }}

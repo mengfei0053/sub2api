@@ -101,30 +101,30 @@ const getToastIconName = (type: string): 'checkCircle' | 'xCircle' | 'exclamatio
 
 const getIconColor = (type: string): string => {
   const colors: Record<string, string> = {
-    success: 'text-green-500',
+    success: 'text-enterprise-primary',
     error: 'text-red-500',
     warning: 'text-yellow-500',
-    info: 'text-blue-500'
+    info: 'text-enterprise-secondary'
   }
   return colors[type] || colors.info
 }
 
 const getBorderColor = (type: string): string => {
   const colors: Record<string, string> = {
-    success: 'border-green-500',
+    success: 'border-enterprise-primary',
     error: 'border-red-500',
     warning: 'border-yellow-500',
-    info: 'border-blue-500'
+    info: 'border-enterprise-outline'
   }
   return colors[type] || colors.info
 }
 
 const getProgressBarColor = (type: string): string => {
   const colors: Record<string, string> = {
-    success: 'bg-green-500',
+    success: 'bg-enterprise-primary',
     error: 'bg-red-500',
     warning: 'bg-yellow-500',
-    info: 'bg-blue-500'
+    info: 'bg-enterprise-secondary'
   }
   return colors[type] || colors.info
 }

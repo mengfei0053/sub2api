@@ -78,7 +78,7 @@
           </span>
           <button
             type="button"
-            class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 transition-colors"
+            class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-medium text-gray-500 transition-colors hover:bg-enterprise-surface-container-low hover:text-enterprise-primary"
             :disabled="activeQueryLoading"
             @click="loadActiveUsage"
           >
@@ -129,7 +129,7 @@
         <div class="flex items-center gap-1.5 mt-0.5">
           <button
             type="button"
-            class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 transition-colors"
+            class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-medium text-gray-500 transition-colors hover:bg-enterprise-surface-container-low hover:text-enterprise-primary"
             :disabled="activeQueryLoading"
             @click="loadActiveUsage"
           >
