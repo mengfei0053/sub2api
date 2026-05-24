@@ -4,7 +4,12 @@
 `Dockerfile` 或 `deploy/docker-compose*.yml`。
 
 EbeeAI 镜像的前端构建源为 `frontend_self/`（本地 UI 定制副本），不是上游对齐的
-`frontend/`。发布前若刚同步 upstream，请先运行 `make check-frontend-self-sync` 确认
+`frontend/`。
+
+- **日常 UI/功能改动**：只修改 `frontend_self/`，不要改 `frontend/`。
+- **`frontend/`**：仅在上游同步（`git merge upstream/main`）时更新，与 upstream 保持一致。
+
+发布前若刚同步 upstream，请先运行 `make check-frontend-self-sync` 确认
 `frontend_self/` 已跟进必要的 API/路由/i18n 变更。
 
 ## 发布到 1Panel 容器编排
