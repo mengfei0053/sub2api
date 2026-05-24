@@ -324,17 +324,17 @@ onUnmounted(() => {
 .date-picker-trigger {
   @apply flex items-center gap-2;
   @apply rounded-lg px-3 py-2 text-sm;
-  @apply bg-white dark:bg-dark-800;
-  @apply border border-gray-200 dark:border-dark-600;
-  @apply text-gray-700 dark:text-gray-300;
+  @apply bg-enterprise-surface-container-lowest;
+  @apply border border-enterprise-outline-variant;
+  @apply text-enterprise-on-surface-variant;
   @apply transition-all duration-200;
-  @apply focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30;
-  @apply hover:border-gray-300 dark:hover:border-dark-500;
+  @apply focus:border-enterprise-primary focus:outline-none focus:ring-2 focus:ring-enterprise-primary/20;
+  @apply hover:border-enterprise-outline;
   @apply cursor-pointer;
 }
 
 .date-picker-trigger-open {
-  @apply border-primary-500 ring-2 ring-primary-500/30;
+  @apply border-enterprise-primary ring-2 ring-enterprise-primary/20;
 }
 
 .date-picker-icon {
@@ -371,8 +371,7 @@ onUnmounted(() => {
 }
 
 .date-picker-preset-active {
-  @apply bg-primary-100 dark:bg-primary-900/30;
-  @apply text-primary-700 dark:text-primary-300;
+  @apply bg-enterprise-surface-container-low font-medium text-enterprise-on-surface;
 }
 
 .date-picker-divider {
@@ -418,8 +417,8 @@ onUnmounted(() => {
 
 .date-picker-apply {
   @apply rounded-lg px-4 py-1.5 text-sm font-medium;
-  @apply bg-primary-600 text-white;
-  @apply hover:bg-primary-700;
+  @apply bg-enterprise-primary text-enterprise-on-primary;
+  @apply hover:bg-enterprise-primary-container;
   @apply transition-colors duration-150;
 }
 
