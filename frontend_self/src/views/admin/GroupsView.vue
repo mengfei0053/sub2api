@@ -291,14 +291,14 @@
             <div class="flex items-center gap-1">
               <button
                 @click="handleEdit(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
+                class="table-action-btn"
               >
                 <Icon name="edit" size="sm" />
                 <span class="text-xs">{{ t("common.edit") }}</span>
               </button>
               <button
                 @click="handleRateMultipliers(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-purple-600 dark:hover:bg-dark-700 dark:hover:text-purple-400"
+                class="table-action-btn"
               >
                 <Icon name="dollar" size="sm" />
                 <span class="text-xs">{{
@@ -307,7 +307,7 @@
               </button>
               <button
                 @click="handleRPMOverrides(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-orange-600 dark:hover:bg-dark-700 dark:hover:text-orange-400"
+                class="table-action-btn"
               >
                 <Icon name="bolt" size="sm" />
                 <span class="text-xs">{{
@@ -316,7 +316,7 @@
               </button>
               <button
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="table-action-btn-danger"
               >
                 <Icon name="trash" size="sm" />
                 <span class="text-xs">{{ t("common.delete") }}</span>
@@ -563,8 +563,8 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 createForm.is_exclusive
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-enterprise-primary'
+                  : 'bg-enterprise-surface-container-high',
               ]"
             >
               <span
@@ -860,8 +860,8 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 createForm.mcp_xml_inject
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-enterprise-primary'
+                  : 'bg-enterprise-surface-container-high',
               ]"
             >
               <span
@@ -920,8 +920,8 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 createForm.claude_code_only
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-enterprise-primary'
+                  : 'bg-enterprise-surface-container-high',
               ]"
             >
               <span
@@ -980,8 +980,8 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 createForm.allow_messages_dispatch
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600'
+                  ? 'bg-enterprise-primary'
+                  : 'bg-enterprise-surface-container-high'
               "
             >
               <span
@@ -1219,8 +1219,8 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 createForm.require_oauth_only
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600'
+                  ? 'bg-enterprise-primary'
+                  : 'bg-enterprise-surface-container-high'
               "
             >
               <span
@@ -1256,8 +1256,8 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 createForm.require_privacy_set
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600'
+                  ? 'bg-enterprise-primary'
+                  : 'bg-enterprise-surface-container-high'
               "
             >
               <span
@@ -1334,8 +1334,8 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 createForm.model_routing_enabled
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-enterprise-primary'
+                  : 'bg-enterprise-surface-container-high',
               ]"
             >
               <span
@@ -1743,8 +1743,8 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 editForm.is_exclusive
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-enterprise-primary'
+                  : 'bg-enterprise-surface-container-high',
               ]"
             >
               <span
@@ -2045,8 +2045,8 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 editForm.mcp_xml_inject
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-enterprise-primary'
+                  : 'bg-enterprise-surface-container-high',
               ]"
             >
               <span
@@ -2103,8 +2103,8 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 editForm.claude_code_only
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-enterprise-primary'
+                  : 'bg-enterprise-surface-container-high',
               ]"
             >
               <span
@@ -2161,8 +2161,8 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 editForm.allow_messages_dispatch
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600'
+                  ? 'bg-enterprise-primary'
+                  : 'bg-enterprise-surface-container-high'
               "
             >
               <span
@@ -2400,8 +2400,8 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 editForm.require_oauth_only
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600'
+                  ? 'bg-enterprise-primary'
+                  : 'bg-enterprise-surface-container-high'
               "
             >
               <span
@@ -2437,8 +2437,8 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 editForm.require_privacy_set
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600'
+                  ? 'bg-enterprise-primary'
+                  : 'bg-enterprise-surface-container-high'
               "
             >
               <span
@@ -2514,8 +2514,8 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 editForm.model_routing_enabled
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-enterprise-primary'
+                  : 'bg-enterprise-surface-container-high',
               ]"
             >
               <span

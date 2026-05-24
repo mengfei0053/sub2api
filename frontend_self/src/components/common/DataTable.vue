@@ -70,16 +70,16 @@
     }"
   >
     <table class="w-full min-w-max divide-y divide-gray-200 dark:divide-dark-700">
-      <thead class="table-header bg-gray-50 dark:bg-dark-800">
+      <thead class="table-header bg-enterprise-surface-container-high">
         <tr>
           <th
             v-for="(column, index) in columns"
             :key="column.key"
             scope="col"
             :class="[
-              'sticky-header-cell py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400',
+              'sticky-header-cell py-3 text-left text-xs font-medium text-enterprise-on-surface-variant',
               getAdaptivePaddingClass(),
-              { 'cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-700': column.sortable },
+              { 'cursor-pointer hover:bg-enterprise-surface-container': column.sortable },
               getStickyColumnClass(column, index),
               column.class
             ]"
@@ -93,7 +93,7 @@
             >
               <div class="flex items-center space-x-1">
                 <span>{{ column.label }}</span>
-                <span v-if="column.sortable" class="text-gray-400 dark:text-dark-500">
+                <span v-if="column.sortable" class="text-enterprise-outline">
                   <svg
                     v-if="sortKey === column.key"
                     class="h-4 w-4"
@@ -721,11 +721,11 @@ defineExpose({
   position: sticky;
   top: 0;
   z-index: 200;
-  background-color: rgb(249 250 251);
+  background-color: #eae7e7;
 }
 
 .dark .table-wrapper .table-header {
-  background-color: rgb(31 41 55);
+  background-color: #eae7e7;
 }
 
 /* 表体保持在表头下方 */
@@ -739,11 +739,11 @@ defineExpose({
   position: sticky;
   top: 0;
   z-index: 210; /* 必须高于所有表体内容 */
-  background-color: rgb(249 250 251);
+  background-color: #eae7e7;
 }
 
 .dark .sticky-header-cell {
-  background-color: rgb(31 41 55);
+  background-color: #eae7e7;
 }
 
 /* Sticky 列基础样式 */

@@ -95,8 +95,8 @@
               @click="setDateRange(range.key)"
               class="text-xs px-3 py-1.5 rounded-lg border transition-all"
               :class="currentRange === range.key
-                ? 'bg-primary-500 text-white border-primary-500'
-                : 'border-gray-200 bg-white text-gray-700 dark:border-dark-700 dark:bg-dark-900 dark:text-dark-200 hover:border-primary-300 dark:hover:border-dark-600'"
+                ? 'bg-enterprise-primary text-enterprise-on-primary border-enterprise-primary'
+                : 'border-enterprise-outline-variant/60 bg-enterprise-surface-container-lowest text-enterprise-on-surface-variant hover:bg-enterprise-surface-container-low'"
             >{{ range.label }}</button>
             <div v-if="currentRange === 'custom'" class="flex items-center gap-2 ml-1">
               <input
@@ -112,7 +112,7 @@
               />
               <button
                 @click="queryKey"
-                class="text-xs px-3 py-1.5 rounded-lg bg-primary-500 text-white hover:bg-primary-600"
+                class="text-xs px-3 py-1.5 rounded-lg bg-enterprise-primary text-enterprise-on-primary hover:bg-enterprise-primary-container"
               >{{ t('keyUsage.apply') }}</button>
             </div>
           </div>
@@ -288,15 +288,15 @@
           >
             <div class="flex flex-col gap-3 px-8 py-5 border-b border-gray-200 dark:border-dark-700 sm:flex-row sm:items-center sm:justify-between">
               <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-400">{{ t('keyUsage.dailyDetail') }}</h3>
-              <div class="inline-flex rounded-lg border border-gray-200 bg-white p-0.5 dark:border-dark-700 dark:bg-dark-950">
+              <div class="inline-flex rounded-lg border border-enterprise-outline-variant/60 bg-enterprise-surface-container-lowest p-0.5">
                 <button
                   v-for="option in dailyUsageOptions"
                   :key="option.value"
                   @click="setDailyUsageDays(option.value)"
                   class="min-w-12 rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
                   :class="dailyUsageDays === option.value
-                    ? 'bg-primary-500 text-white'
-                    : 'text-gray-600 hover:bg-gray-100 dark:text-dark-300 dark:hover:bg-dark-800'"
+                    ? 'bg-enterprise-primary text-enterprise-on-primary'
+                    : 'text-enterprise-on-surface-variant hover:bg-enterprise-surface-container-low'"
                 >
                   {{ option.label }}
                 </button>
