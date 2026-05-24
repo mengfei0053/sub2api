@@ -108,6 +108,13 @@ export default {
     footer: {
       allRightsReserved: 'All rights reserved.'
     },
+    seo: {
+      title: 'Home',
+      description:
+        'EbeeAI is an enterprise AI API gateway for unified access to Claude, GPT, Gemini, and other leading models with performance, security, and cost control.',
+      defaultDescription:
+        'EbeeAI provides secure, reliable, and scalable unified access to enterprise AI models.'
+    },
     ebeeai: {
       nav: {
         features: 'Features',
@@ -464,6 +471,10 @@ export default {
 
   // Auth
   auth: {
+    seo: {
+      loginDescription: 'Sign in to EbeeAI to access your enterprise AI API gateway console.',
+      registerDescription: 'Create an EbeeAI account to start using unified AI model access and gateway services.'
+    },
     welcomeBack: 'Welcome Back',
     signInToAccount: 'Sign in to your account to continue',
     signIn: 'Sign In',
