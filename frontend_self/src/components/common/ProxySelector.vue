@@ -72,7 +72,7 @@
             :class="['select-option', modelValue === null && 'select-option-selected']"
           >
             <span class="select-option-label">{{ t('admin.accounts.noProxy') }}</span>
-            <Icon v-if="modelValue === null" name="check" size="sm" class="text-primary-500" />
+            <Icon v-if="modelValue === null" name="check" size="sm" class="text-enterprise-primary" />
           </div>
 
           <!-- Proxy options -->
@@ -153,7 +153,7 @@
               v-if="modelValue === proxy.id"
               name="check"
               size="sm"
-              class="flex-shrink-0 text-primary-500"
+              class="flex-shrink-0 text-enterprise-primary"
             />
           </div>
 
@@ -322,17 +322,17 @@ onUnmounted(() => {
 .select-trigger {
   @apply flex w-full items-center justify-between gap-2;
   @apply rounded-xl px-4 py-2.5 text-sm;
-  @apply bg-white dark:bg-dark-800;
-  @apply border border-gray-200 dark:border-dark-600;
-  @apply text-gray-900 dark:text-gray-100;
+  @apply bg-enterprise-surface-container-lowest;
+  @apply border border-enterprise-outline-variant;
+  @apply text-enterprise-on-surface;
   @apply transition-all duration-200;
-  @apply focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30;
-  @apply hover:border-gray-300 dark:hover:border-dark-500;
+  @apply focus:border-enterprise-primary focus:outline-none focus:ring-2 focus:ring-enterprise-primary/20;
+  @apply hover:border-enterprise-outline;
   @apply cursor-pointer;
 }
 
 .select-trigger-open {
-  @apply border-primary-500 ring-2 ring-primary-500/30;
+  @apply border-enterprise-primary ring-2 ring-enterprise-primary/20;
 }
 
 .select-trigger-disabled {
@@ -392,8 +392,7 @@ onUnmounted(() => {
 }
 
 .select-option-selected {
-  @apply bg-primary-50 dark:bg-primary-900/20;
-  @apply text-primary-700 dark:text-primary-300;
+  @apply bg-enterprise-surface-container-low font-medium text-enterprise-on-surface;
 }
 
 .select-option-label {
