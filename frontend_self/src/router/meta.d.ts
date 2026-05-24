@@ -61,6 +61,11 @@ declare module 'vue-router' {
     titleKey?: string
 
     /**
+     * Whether search engines should index this route
+     */
+    indexable?: boolean
+
+    /**
      * i18n key for the page description
      */
     descriptionKey?: string
