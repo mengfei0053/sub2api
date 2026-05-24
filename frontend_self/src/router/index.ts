@@ -11,7 +11,7 @@ import { useNavigationLoadingState } from '@/composables/useNavigationLoading'
 import { useRoutePrefetch } from '@/composables/useRoutePrefetch'
 import { getSetupStatus } from '@/api/setup'
 import { resolveCompletedSetupRedirectPath } from './setupRedirect'
-import { resolveDocumentTitle } from './title'
+import { applyRouteSeo } from './seo'
 
 /**
  * Route definitions with lazy loading
@@ -35,7 +35,10 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/HomeView.vue'),
     meta: {
       requiresAuth: false,
-      title: 'Home'
+      title: 'Home',
+      titleKey: 'home.seo.title',
+      descriptionKey: 'home.seo.description',
+      indexable: true
     }
   },
   {
@@ -45,7 +48,9 @@ const routes: RouteRecordRaw[] = [
     meta: {
       requiresAuth: false,
       title: 'Login',
-      titleKey: 'common.login'
+      titleKey: 'common.login',
+      descriptionKey: 'auth.seo.loginDescription',
+      indexable: true
     }
   },
   {
@@ -55,7 +60,9 @@ const routes: RouteRecordRaw[] = [
     meta: {
       requiresAuth: false,
       title: 'Register',
-      titleKey: 'auth.createAccount'
+      titleKey: 'auth.createAccount',
+      descriptionKey: 'auth.seo.registerDescription',
+      indexable: true
     }
   },
   {
@@ -729,9 +736,9 @@ router.beforeEach(async (to, _from, next) => {
     authInitialized = true
   }
 
-  // Set page title
+  // Set page title and SEO meta tags
   const appStore = useAppStore()
-  // For custom pages, use menu item label as document title
+  let customTitle: string | undefined
   if (to.name === 'CustomPage') {
     const id = to.params.id as string
     const publicItems = appStore.cachedPublicSettings?.custom_menu_items ?? []
@@ -740,13 +747,15 @@ router.beforeEach(async (to, _from, next) => {
       ?? (authStore.isAdmin ? adminSettingsStore.customMenuItems.find((item) => item.id === id) : undefined)
     if (menuItem?.label) {
       const siteName = appStore.siteName || 'Sub2API'
-      document.title = `${menuItem.label} - ${siteName}`
-    } else {
-      document.title = resolveDocumentTitle(to.meta.title, appStore.siteName, to.meta.titleKey as string)
+      customTitle = `${menuItem.label} - ${siteName}`
     }
-  } else {
-    document.title = resolveDocumentTitle(to.meta.title, appStore.siteName, to.meta.titleKey as string)
   }
+
+  applyRouteSeo({
+    route: to,
+    siteName: appStore.siteName,
+    customTitle
+  })
 
   // Check if route requires authentication
   const requiresAuth = to.meta.requiresAuth !== false // Default to true
