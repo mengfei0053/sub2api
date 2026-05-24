@@ -15,10 +15,12 @@
       <!-- Logo/Brand -->
       <div class="mb-8 text-center">
         <template v-if="settingsLoaded">
-          <div
-            class="mb-4 inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-enterprise-outline-variant/60 bg-enterprise-surface-container-lowest shadow-sm"
-          >
-            <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
+          <div class="mb-4 flex justify-center">
+            <img
+              :src="siteLogo || '/logo.png'"
+              :alt="siteName"
+              class="h-16 w-auto object-contain"
+            />
           </div>
           <h1 class="mb-2 text-3xl font-bold tracking-tight text-enterprise-on-surface">
             {{ siteName }}

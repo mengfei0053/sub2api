@@ -7,14 +7,14 @@
       <div
         class="mx-auto flex h-16 max-w-content items-center justify-between px-margin-mobile md:px-margin-desktop"
       >
-        <router-link to="/home" class="flex shrink-0 items-center gap-3">
+        <router-link to="/home" class="flex shrink-0 items-center gap-2.5">
           <img
             v-if="siteLogo"
             :src="siteLogo"
             :alt="siteName"
             class="h-8 w-auto object-contain"
           />
-          <span v-else class="text-lg font-semibold tracking-tight text-enterprise-primary">
+          <span class="text-lg font-semibold tracking-tight text-enterprise-primary">
             {{ siteName }}
           </span>
         </router-link>
