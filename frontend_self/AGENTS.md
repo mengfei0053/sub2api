@@ -5,10 +5,11 @@
 - Role: Local UI customization fork of `frontend/` (Vue 3 + Vite). Upstream-aligned code lives in `frontend/`; apply structural fixes from there after each upstream sync.
 
 ## Working Rules
+- **This is the default frontend edit target** for this fork (EbeeAI UI, local behavior, themes, etc.). Do not implement the same customizations in `frontend/`.
 - Prefer narrow, local changes that follow the surrounding package/component patterns.
 - Preserve existing public APIs, route names, config keys, and i18n keys unless the task explicitly changes them.
 - Do not commit secrets, local config, database backups, generated build outputs, or dependency directories.
-- After merging upstream into `main`, run `make check-frontend-self-sync` from the repo root and merge needed changes from `frontend/` into `frontend_self/`.
+- **`frontend/` is upstream-only:** change it only when syncing upstream; then run `make check-frontend-self-sync` from the repo root and merge needed changes from `frontend/` into `frontend_self/`.
 
 ## Local Guidance
 - Use `pnpm`, not npm or yarn; keep `pnpm-lock.yaml` synchronized after dependency changes.
