@@ -11,6 +11,7 @@
 
 ## Local Guidance
 - Keep English, Chinese, and Japanese docs semantically aligned when changing user-facing setup or behavior.
+- **Frontend split:** EbeeAI and other local UI work happens in `frontend_self/` only. Do **not** change `frontend/` for product customizations. Update `frontend/` only when syncing upstream (`git merge upstream/main`) so it stays aligned with **Wei-Shaw/sub2api**. After each upstream sync, run `make check-frontend-self-sync` and merge needed changes into `frontend_self/` (see `frontend_self/README.md`, `DEV_GUIDE.md`).
 
 ## Local Notes
 - Check local README files before changing behavior or docs in this subtree.
@@ -22,7 +23,7 @@
 
 ## Project Commands
 - Backend: `cd backend && go test ./...`, `cd backend && go test -tags=unit ./...`, `cd backend && go test -tags=integration ./...`.
-- Frontend: `cd frontend && pnpm install`, `pnpm run typecheck`, `pnpm run lint:check`, `pnpm run test:run`, `pnpm run build`.
-- Frontend (local UI fork): `frontend_self/` mirrors `frontend/` for customized UI work; after syncing upstream, run `make check-frontend-self-sync` and update `frontend_self/` when needed (see `frontend_self/README.md`, `DEV_GUIDE.md`).
+- Frontend: `cd frontend && pnpm install`, `pnpm run typecheck`, `pnpm run lint:check`, `pnpm run test:run`, `pnpm run build` — **upstream mirror only**; not the day-to-day edit target for this fork.
+- Frontend (local UI fork): **default edit target** — `frontend_self/` mirrors `frontend/` for EbeeAI and other customized UI; validate with `cd frontend_self && pnpm run typecheck` (etc.). After syncing upstream, run `make check-frontend-self-sync` and update `frontend_self/` when needed (see `frontend_self/README.md`, `DEV_GUIDE.md`).
 - Ent generation: `cd backend && go generate ./ent` after editing `backend/ent/schema`.
 - Root wrappers: `make test`, `make build`, and focused Makefile targets where available.
