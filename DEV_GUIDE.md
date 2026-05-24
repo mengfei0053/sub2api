@@ -240,8 +240,21 @@ git add ent/       # 生成的文件也要提交
 
 **原则**：
 
-- `frontend/` = 上游真相源
-- `frontend_self/` = 在真相源之上做 UI 定制；上游结构性变更（api、stores、router、i18n）必须跟进
+- `frontend/` = 上游真相源；**仅在上游同步时修改**，与 upstream 分支保持一致
+- `frontend_self/` = **日常开发目录**；在真相源之上做 UI/行为定制；上游结构性变更（api、stores、router、i18n）必须跟进
+
+---
+
+### 坑 13：在 frontend/ 做本地定制
+
+**问题**：在 `frontend/` 改 UI 或行为（例如固定浅色主题），EbeeAI 实际构建用的是 `frontend_self/`，改动不生效；且污染 upstream 镜像目录，同步时产生多余冲突。
+
+**解决**：
+
+- 本地需求、EbeeAI 定制 → **只改 `frontend_self/`**
+- `frontend/` → **只在** `git fetch upstream && git merge upstream/main`（或 rebase）时更新
+
+**验证**：`deploy_ebeeai` 与 GHCR 镜像的 `FRONTEND_DIR` 为 `frontend_self`；本地开发也在 `frontend_self` 下 `pnpm run dev` / `pnpm run build`。
 
 ---
 
@@ -304,8 +317,12 @@ make check-frontend-self-sync
 
 | 目录 | 用途 |
 |------|------|
-| `frontend/` | 与上游 **Wei-Shaw/sub2api** 对齐的标准前端 |
-| `frontend_self/` | 本地 UI 定制副本（如 Stitch 设计落地），需手动跟进 upstream |
+| `frontend/` | 与上游 **Wei-Shaw/sub2api** 对齐的标准前端；**仅在上游同步时修改** |
+| `frontend_self/` | **日常开发与 EbeeAI 发布**用的本地 UI 定制副本；按需从 `frontend/` 跟进 upstream |
+
+**日常开发**：功能、样式、主题等行为变更 → 只编辑 `frontend_self/`。
+
+**上游同步**：`git merge upstream/main` 后更新 `frontend/` → 运行 `make check-frontend-self-sync` → 将需要的变更合并进 `frontend_self/`。
 
 **每次同步 upstream 后**，运行：
 
@@ -348,17 +365,26 @@ cd frontend_self && pnpm install && pnpm run typecheck
 
 ### 前端操作
 
+**EbeeAI / 本地定制（默认）**：
+
 ```bash
-# 安装依赖（必须用 pnpm）
+cd frontend_self
+pnpm install
+pnpm run dev      # 开发服务器
+pnpm run build    # 生产构建
+pnpm run typecheck
+```
+
+**上游镜像 `frontend/`**（仅同步 upstream 后校验，或非 EbeeAI 场景）：
+
+```bash
 cd frontend
 pnpm install
-
-# 开发服务器
 pnpm dev
-
-# 构建
 pnpm build
 ```
+
+根目录 `make test` / `make build` 仍针对 `frontend/`。验证 `frontend_self` 请在 `frontend_self/` 目录单独执行命令。
 
 ### 后端操作
 
