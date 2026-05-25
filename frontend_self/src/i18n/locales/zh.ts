@@ -109,11 +109,11 @@ export default {
       allRightsReserved: '保留所有权利。'
     },
     seo: {
-      title: '首页',
+      title: 'AI API 网关_Claude GPT Gemini API 统一接入平台 {\'|\'} EbeeAI',
       description:
-        'EbeeAI 企业级 AI API 网关，统一接入 Claude、GPT、Gemini 等主流大模型，提供高性能路由、安全合规与成本控制能力。',
+        'EbeeAI 是面向开发者和团队的 AI中转站与 AI API 网关，支持统一接入 Claude、GPT、Gemini 等主流模型，提供多模型中转、API Key 管理、用量统计、按量计费和稳定路由能力。',
       defaultDescription:
-        'EbeeAI 企业级 AI API 网关，为企业提供安全、稳定、可扩展的大模型统一接入服务。'
+        'EbeeAI 是 AI中转站与 AI API 网关，为开发者和团队提供安全、稳定、可扩展的多模型统一接入服务。'
     },
     ebeeai: {
       nav: {
@@ -166,6 +166,42 @@ export default {
       },
       partners: {
         label: '行业领先企业的共同选择'
+      },
+      faq: {
+        eyebrow: '常见问题',
+        title: '关于 EbeeAI 的常见问题',
+        items: {
+          whatIsEbeeai: {
+            question: 'EbeeAI 是什么？',
+            answer:
+              'EbeeAI 不是普通 AI 中转站，而是面向开发者和团队的 AI API 网关与多模型统一接入平台。通过一个 API Key，用户可以统一调用 Claude、GPT、Gemini 等主流 AI 模型。'
+          },
+          difference: {
+            question: 'EbeeAI 和普通 AI 中转站有什么区别？',
+            answer:
+              '普通 AI 中转站通常只解决 API 请求转发问题。EbeeAI 还提供 API Key 管理、用量统计、按量计费、稳定路由、额度控制和团队使用管理，更适合长期使用和 AI 应用开发。'
+          },
+          apiGateway: {
+            question: '什么是 AI API 网关？',
+            answer:
+              'AI API 网关是连接用户应用和多个 AI 模型服务的统一入口，可以把 Claude、GPT、Gemini 等不同模型统一到一套 API 调用方式中，并提供权限、用量、计费和稳定性管理能力。'
+          },
+          models: {
+            question: 'EbeeAI 支持哪些 AI 模型？',
+            answer:
+              'EbeeAI 支持统一接入 Claude、GPT、Gemini 等主流 AI 模型，并可根据平台配置扩展更多模型，适合 AI 应用、Agent、RAG 知识库、多模型测试和企业内部工具。'
+          },
+          apiKey: {
+            question: '如何获取 EbeeAI 的 API Key？',
+            answer:
+              '用户注册并登录 EbeeAI 后，可以在控制台创建和管理自己的 API Key。创建后即可用于调用已接入的 AI 模型，并查看调用记录、用量统计、余额和额度情况。'
+          },
+          costControl: {
+            question: 'EbeeAI 是否支持用量统计和成本控制？',
+            answer:
+              '支持。EbeeAI 提供 API 调用用量统计、费用统计和额度管理能力，帮助个人开发者和团队了解每个 API Key 的使用情况，避免成本失控。'
+          }
+        }
       },
       cta: {
         title: '准备好升级您的',
