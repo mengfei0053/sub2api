@@ -1,5 +1,5 @@
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
-import { buildOrganizationStructuredData, DEFAULT_OG_IMAGE, SITE_ORIGIN } from '@/config/seo'
+import { buildHomeStructuredData, DEFAULT_OG_IMAGE, SITE_ORIGIN, type FaqItem } from '@/config/seo'
 import { i18n } from '@/i18n'
 import { resolveDocumentTitle } from '@/router/title'
 
@@ -35,6 +35,15 @@ function upsertLink(rel: string, href: string) {
   element.href = href
 }
 
+function resolveHomeFaqItems(): FaqItem[] {
+  const keys = ['whatIsEbeeai', 'difference', 'apiGateway', 'models', 'apiKey', 'costControl']
+
+  return keys.map((key) => ({
+    question: i18n.global.t(`home.ebeeai.faq.items.${key}.question`),
+    answer: i18n.global.t(`home.ebeeai.faq.items.${key}.answer`)
+  }))
+}
+
 function upsertStructuredData(route: RouteLocationNormalizedLoaded, siteName: string | undefined, description: string) {
   const existing = document.getElementById(STRUCTURED_DATA_SCRIPT_ID)
 
@@ -46,7 +55,7 @@ function upsertStructuredData(route: RouteLocationNormalizedLoaded, siteName: st
   const script = (existing as HTMLScriptElement | null) ?? document.createElement('script')
   script.id = STRUCTURED_DATA_SCRIPT_ID
   script.type = 'application/ld+json'
-  script.textContent = JSON.stringify(buildOrganizationStructuredData(siteName, description))
+  script.textContent = JSON.stringify(buildHomeStructuredData(siteName, description, resolveHomeFaqItems()))
 
   if (!existing) {
     document.head.appendChild(script)
