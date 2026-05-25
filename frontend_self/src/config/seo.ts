@@ -15,6 +15,47 @@ export type OrganizationStructuredData = {
   description: string
 }
 
+export type SoftwareApplicationStructuredData = {
+  '@context': 'https://schema.org'
+  '@type': 'SoftwareApplication'
+  name: string
+  url: string
+  image: string
+  applicationCategory: 'DeveloperApplication'
+  applicationSubCategory: string
+  operatingSystem: 'Web'
+  description: string
+  offers: {
+    '@type': 'Offer'
+    price: string
+    priceCurrency: string
+  }
+}
+
+export type FaqPageStructuredData = {
+  '@context': 'https://schema.org'
+  '@type': 'FAQPage'
+  mainEntity: Array<{
+    '@type': 'Question'
+    name: string
+    acceptedAnswer: {
+      '@type': 'Answer'
+      text: string
+    }
+  }>
+}
+
+export type HomeStructuredData = [
+  OrganizationStructuredData,
+  SoftwareApplicationStructuredData,
+  FaqPageStructuredData
+]
+
+export type FaqItem = {
+  question: string
+  answer: string
+}
+
 export function buildOrganizationStructuredData(
   siteName?: string,
   description?: string
@@ -27,4 +68,53 @@ export function buildOrganizationStructuredData(
     logo: DEFAULT_OG_IMAGE,
     description: description?.trim() || ''
   }
+}
+
+export function buildSoftwareApplicationStructuredData(
+  siteName?: string,
+  description?: string
+): SoftwareApplicationStructuredData {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: siteName?.trim() || DEFAULT_SITE_NAME,
+    url: SITE_ORIGIN,
+    image: DEFAULT_OG_IMAGE,
+    applicationCategory: 'DeveloperApplication',
+    applicationSubCategory: 'AI API Gateway',
+    operatingSystem: 'Web',
+    description: description?.trim() || '',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD'
+    }
+  }
+}
+
+export function buildFaqPageStructuredData(faqItems: FaqItem[]): FaqPageStructuredData {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer
+      }
+    }))
+  }
+}
+
+export function buildHomeStructuredData(
+  siteName?: string,
+  description?: string,
+  faqItems: FaqItem[] = []
+): HomeStructuredData {
+  return [
+    buildOrganizationStructuredData(siteName, description),
+    buildSoftwareApplicationStructuredData(siteName, description),
+    buildFaqPageStructuredData(faqItems)
+  ]
 }
