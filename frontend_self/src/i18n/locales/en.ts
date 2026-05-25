@@ -126,10 +126,10 @@ export default {
       },
       hero: {
         badge: '{name} Gateway is live',
-        title: 'Enterprise AI Model Access',
-        titleLine2: '& Unified Gateway',
+        title: 'AI API Gateway &',
+        titleLine2: 'Multi-Model Unified Access Platform',
         subtitle:
-          'High performance, multi-model support, security compliance, and cost control. Build reliable AI infrastructure for your organization.',
+          'One API key to access Claude, GPT, Gemini, and other leading AI models, with multi-model routing, usage analytics, and pay-as-you-go billing.',
         trial: 'Request a Trial',
         readDocs: 'Read Documentation'
       },
