@@ -322,7 +322,12 @@ const siteName = computed(
 const siteLogo = computed(
   () => appStore.cachedPublicSettings?.site_logo || appStore.siteLogo || ''
 )
-const siteSubtitle = computed(() => appStore.cachedPublicSettings?.site_subtitle || '')
+const siteSubtitle = computed(() => {
+  const subtitle = appStore.cachedPublicSettings?.site_subtitle?.trim()
+  return subtitle && subtitle !== 'Subscription to API Conversion Platform'
+    ? subtitle
+    : t('home.ebeeai.hero.subtitle')
+})
 const docUrl = computed(() => appStore.cachedPublicSettings?.doc_url || appStore.docUrl || '')
 
 const isAuthenticated = computed(() => authStore.isAuthenticated)
