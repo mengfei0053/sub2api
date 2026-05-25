@@ -126,10 +126,10 @@ export default {
       },
       hero: {
         badge: '{name} Gateway 现已上线',
-        title: '企业级 AI 模型安全接入',
-        titleLine2: '与统一网关',
+        title: 'AI API 网关与',
+        titleLine2: '多模型统一接入平台',
         subtitle:
-          '高性能、多模型适配、安全合规、极致成本控制。构建稳健的 AI 基础设施，赋能企业智能升级。',
+          '一个 API Key，统一接入 Claude、GPT、Gemini 等主流 AI 模型，适合 AI中转站、多模型路由、用量统计与按量计费等场景。',
         trial: '立即申请试用',
         readDocs: '阅读文档'
       },
@@ -179,7 +179,7 @@ export default {
           difference: {
             question: 'EbeeAI 和普通 AI 中转站有什么区别？',
             answer:
-              '普通 AI 中转站通常只解决 API 请求转发问题。EbeeAI 还提供 API Key 管理、用量统计、按量计费、稳定路由、额度控制和团队使用管理，更适合长期使用和 AI 应用开发。'
+              'EbeeAI 不是普通 AI 中转站，而是面向开发者和团队的 AI API 网关与多模型统一接入平台。它不仅支持 Claude、GPT、Gemini 等模型的统一接入，还提供 API Key 管理、多模型路由、用量统计、按量计费和稳定性保障。'
           },
           apiGateway: {
             question: '什么是 AI API 网关？',
