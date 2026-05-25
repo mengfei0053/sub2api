@@ -163,63 +163,28 @@
         class="ebeeai-scroll-section flex flex-col justify-center px-margin-mobile md:px-margin-desktop ebeeai-dot-grid"
       >
         <div class="mx-auto w-full max-w-content">
-          <div class="grid grid-cols-1 items-center gap-10 lg:grid-cols-2">
-            <div class="space-y-10">
-              <div>
-                <h2 class="mb-4 text-3xl font-semibold tracking-tight text-enterprise-primary">
-                  {{ t('home.ebeeai.stats.title') }}
-                </h2>
-                <p class="text-lg leading-relaxed text-enterprise-secondary">
-                  {{ t('home.ebeeai.stats.subtitle') }}
-                </p>
-              </div>
-              <div class="grid grid-cols-2 gap-6">
-                <div
-                  v-for="stat in statItems"
-                  :key="stat.label"
-                  class="ebeeai-glass-panel rounded p-6"
-                >
-                  <div class="mb-1 text-3xl font-semibold tracking-tight text-enterprise-primary">
-                    {{ stat.value }}
-                  </div>
-                  <div
-                    class="text-xs font-medium uppercase tracking-wider text-enterprise-secondary"
-                  >
-                    {{ stat.label }}
-                  </div>
-                </div>
-              </div>
+          <div class="mx-auto max-w-4xl space-y-10">
+            <div class="text-center">
+              <h2 class="mb-4 text-3xl font-semibold tracking-tight text-enterprise-primary">
+                {{ t('home.ebeeai.stats.title') }}
+              </h2>
+              <p class="mx-auto max-w-2xl text-lg leading-relaxed text-enterprise-secondary">
+                {{ t('home.ebeeai.stats.subtitle') }}
+              </p>
             </div>
-            <div
-              class="relative flex min-h-[400px] flex-col overflow-hidden rounded border border-enterprise-outline-variant bg-enterprise-surface-container-highest p-10"
-            >
+            <div class="grid grid-cols-2 gap-6">
               <div
-                class="absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-enterprise-outline-variant via-enterprise-primary to-enterprise-outline-variant opacity-50"
-              />
-              <h3
-                class="mb-6 flex items-center gap-2 text-2xl font-medium tracking-tight text-enterprise-primary"
+                v-for="stat in statItems"
+                :key="stat.label"
+                class="ebeeai-glass-panel rounded p-6 text-center"
               >
-                <Icon name="server" size="md" />
-                {{ t('home.ebeeai.stats.logTitle') }}
-              </h3>
-              <div class="flex-1 space-y-2 overflow-y-auto font-mono text-sm text-enterprise-on-surface-variant">
+                <div class="mb-1 text-3xl font-semibold tracking-tight text-enterprise-primary">
+                  {{ stat.value }}
+                </div>
                 <div
-                  v-for="(entry, index) in routingLog"
-                  :key="index"
-                  class="flex flex-wrap items-center justify-between gap-2 border-b border-enterprise-outline-variant/30 pb-2"
+                  class="text-xs font-medium uppercase tracking-wider text-enterprise-secondary"
                 >
-                  <span class="text-enterprise-secondary">{{ entry.time }}</span>
-                  <span class="flex-1 truncate">{{ entry.message }}</span>
-                  <span
-                    class="rounded border px-1 text-xs font-medium"
-                    :class="
-                      entry.blocked
-                        ? 'border-enterprise-error text-enterprise-error'
-                        : 'border-enterprise-primary text-enterprise-primary'
-                    "
-                  >
-                    {{ entry.latency }}
-                  </span>
+                  {{ stat.label }}
                 </div>
               </div>
             </div>
@@ -265,6 +230,38 @@
             />
           </router-link>
         </div>
+
+        <section
+          data-testid="home-faq"
+          class="mx-auto w-full max-w-content border-t border-enterprise-outline-variant/30 py-12 text-left"
+          aria-labelledby="home-faq-title"
+        >
+          <div class="mb-8 text-center">
+            <p class="mb-3 text-sm font-medium uppercase tracking-wider text-enterprise-secondary">
+              {{ t('home.ebeeai.faq.eyebrow') }}
+            </p>
+            <h2
+              id="home-faq-title"
+              class="text-3xl font-semibold tracking-tight text-enterprise-primary md:text-4xl"
+            >
+              {{ t('home.ebeeai.faq.title') }}
+            </h2>
+          </div>
+          <div class="grid grid-cols-1 gap-px border border-enterprise-outline-variant/30 bg-enterprise-outline-variant/30 md:grid-cols-2">
+            <article
+              v-for="item in faqItems"
+              :key="item.key"
+              class="bg-enterprise-surface p-6 transition-colors hover:bg-enterprise-surface-container-low md:p-8"
+            >
+              <h3 class="mb-3 text-lg font-medium tracking-tight text-enterprise-primary">
+                {{ item.question }}
+              </h3>
+              <p class="text-sm leading-relaxed text-enterprise-secondary md:text-base">
+                {{ item.answer }}
+              </p>
+            </article>
+          </div>
+        </section>
 
         <footer
           class="mx-auto flex w-full max-w-content flex-col items-center justify-between gap-6 border-t border-enterprise-outline-variant/30 py-10 md:flex-row"
@@ -382,40 +379,40 @@ const statItems = computed(() => [
   { value: '0', label: t('home.ebeeai.stats.breaches') }
 ])
 
-const routingLog = computed(() => [
+const partners = ['TECHCORP', 'NEXUS', 'QUANTUM', 'SYNERGY', 'DATASTREAM']
+
+const faqItems = computed(() => [
   {
-    time: '[08:24:12.431]',
-    message: 'REQ_ID_A9F2... → ' + t('home.ebeeai.routingLog.openai'),
-    latency: '24ms',
-    blocked: false
+    key: 'whatIsEbeeai',
+    question: t('home.ebeeai.faq.items.whatIsEbeeai.question'),
+    answer: t('home.ebeeai.faq.items.whatIsEbeeai.answer')
   },
   {
-    time: '[08:24:12.445]',
-    message: 'REQ_ID_C3E8... → ' + t('home.ebeeai.routingLog.cache'),
-    latency: '2ms',
-    blocked: false
+    key: 'difference',
+    question: t('home.ebeeai.faq.items.difference.question'),
+    answer: t('home.ebeeai.faq.items.difference.answer')
   },
   {
-    time: '[08:24:12.510]',
-    message: 'REQ_ID_B1D7... → ' + t('home.ebeeai.routingLog.claude'),
-    latency: '31ms',
-    blocked: false
+    key: 'apiGateway',
+    question: t('home.ebeeai.faq.items.apiGateway.question'),
+    answer: t('home.ebeeai.faq.items.apiGateway.answer')
   },
   {
-    time: '[08:24:12.552]',
-    message: 'REQ_ID_F4A1... → ' + t('home.ebeeai.routingLog.blocked'),
-    latency: t('home.ebeeai.routingLog.blockedTag'),
-    blocked: true
+    key: 'models',
+    question: t('home.ebeeai.faq.items.models.question'),
+    answer: t('home.ebeeai.faq.items.models.answer')
   },
   {
-    time: '[08:24:12.603]',
-    message: 'REQ_ID_E5C9... → ' + t('home.ebeeai.routingLog.llama'),
-    latency: '18ms',
-    blocked: false
+    key: 'apiKey',
+    question: t('home.ebeeai.faq.items.apiKey.question'),
+    answer: t('home.ebeeai.faq.items.apiKey.answer')
+  },
+  {
+    key: 'costControl',
+    question: t('home.ebeeai.faq.items.costControl.question'),
+    answer: t('home.ebeeai.faq.items.costControl.answer')
   }
 ])
-
-const partners = ['TECHCORP', 'NEXUS', 'QUANTUM', 'SYNERGY', 'DATASTREAM']
 
 const footerLinks = computed(() => [
   { to: '/legal/privacy', label: t('home.ebeeai.footer.privacy') },
