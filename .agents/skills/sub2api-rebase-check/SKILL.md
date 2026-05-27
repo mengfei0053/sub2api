@@ -1,6 +1,6 @@
 ---
 name: sub2api-rebase-check
-description: Check the Sub2API repository after rebasing or syncing onto an upstream Wei-Shaw/sub2api branch or tag. Use when working in this project after commands such as git rebase upstream/main, git rebase --onto vX.Y.Z, syncing main/main_self, or updating release branches, especially to verify frontend_self keeps EbeeAI custom homepage/i18n changes while also including all upstream frontend changes.
+description: Check the Sub2API repository after rebasing or syncing onto an upstream Wei-Shaw/sub2api branch or tag. Use when working in this project after commands such as git rebase upstream/main, git rebase --onto vX.Y.Z, syncing main, cutting a new release branch from the current one, or updating release branches, especially to verify frontend_self keeps EbeeAI custom homepage/i18n changes while also including all upstream frontend changes.
 ---
 
 # Sub2API Rebase Check
