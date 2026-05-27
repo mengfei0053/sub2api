@@ -7,12 +7,21 @@ description: Check the Sub2API repository after rebasing or syncing onto an upst
 
 ## Purpose
 
-After every upstream rebase or tag sync, verify two things together:
+After every upstream rebase or tag sync, verify these things together:
 
 - `frontend_self/` includes all relevant upstream `frontend/` changes.
 - EbeeAI local customizations in `frontend_self/` were not overwritten, especially homepage SEO/i18n.
+- EbeeAI brand assets in `frontend_self/` were not replaced by upstream copies, especially `frontend_self/public/logo.png`.
 
 Use this skill from the Sub2API repository root.
+
+## Protected Local Brand Assets
+
+These files are intentionally EbeeAI-specific and must always keep our version — never overwrite them with the upstream `frontend/` copy during a rebase or sync:
+
+- `frontend_self/public/logo.png` — EbeeAI brand logo. The upstream `frontend/public/logo.png` is a different image; if a rebase pulls it in, restore ours.
+
+If upstream changes one of these paths, ignore the upstream change for `frontend_self/` and keep our asset.
 
 ## Required Workflow
 
@@ -52,6 +61,7 @@ The script checks:
 - `frontend_self` locale files contain every key present in upstream `frontend` locale files;
 - EbeeAI required local keys exist: `home.seo.*`, `home.ebeeai.*`, `auth.seo.*`;
 - upstream platform quota keys exist, including `dashboard.platformQuota`, `admin.users.platformQuota`, `admin.settings.defaults.defaultPlatformQuotas`, and auth-source quota override keys.
+- protected local brand assets exist and still differ from the upstream `frontend/` copy (i.e. `frontend_self/public/logo.png` was not overwritten by upstream).
 
 4. Run repository checks:
 
@@ -77,6 +87,7 @@ Run broader `pnpm run lint:check`, `pnpm run build`, `make test`, or `make build
 - Missing or different non-locale files: copy or merge the upstream `frontend/src/...` change into the matching `frontend_self/src/...` path, then re-run the script.
 - Missing locale keys from upstream: merge only the missing keys into `frontend_self/src/i18n/locales/en.ts` and `zh.ts`.
 - Missing EbeeAI homepage keys: restore local `home.seo`, `home.ebeeai`, and `auth.seo` blocks in `frontend_self` without removing upstream quota keys.
+- Protected asset matches upstream (our logo was overwritten): restore our EbeeAI `frontend_self/public/logo.png` from a pre-rebase commit (do not take upstream's copy), then re-run.
 - `make check-frontend-self-sync` may warn that `frontend/` has AGENTS.md differences from upstream or that `pnpm-lock.yaml` metadata differs. Treat script failures and missing keys as blockers; treat lockfile metadata warnings as follow-up only after inspecting the diff.
 
 ## Completion Standard
