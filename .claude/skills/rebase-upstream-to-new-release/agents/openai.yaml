@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rebase Upstream to New Release"
+  short_description: "Upgrade EbeeAI to a newer upstream Sub2API version."
+  default_prompt: "Upgrade EbeeAI to a newer upstream Sub2API version: sync main to upstream, cut a new release branch from the current one, rebase EbeeAI commits onto the new upstream tag, reconcile frontend_self with upstream frontend, then publish."
