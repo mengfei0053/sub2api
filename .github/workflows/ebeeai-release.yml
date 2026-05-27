@@ -17,7 +17,6 @@ permissions:
 
 env:
   IMAGE_NAME: sub2api-ebeeai
-  SYNC_BRANCH: main_self
 
 jobs:
   resolve-version:
@@ -27,6 +26,7 @@ jobs:
       release_version: ${{ steps.parse.outputs.release_version }}
       upstream_version: ${{ steps.parse.outputs.upstream_version }}
       ebeeai_version: ${{ steps.parse.outputs.ebeeai_version }}
+      sync_branch: ${{ steps.parse.outputs.sync_branch }}
     steps:
       - name: Parse release tag
         id: parse
@@ -54,6 +54,7 @@ jobs:
             echo "release_version=${RELEASE_VERSION}"
             echo "upstream_version=${UPSTREAM_VERSION}"
             echo "ebeeai_version=${EBEEAI_VERSION}"
+            echo "sync_branch=release/v${UPSTREAM_VERSION}"
           } >> "${GITHUB_OUTPUT}"
 
           echo "Tag: ${TAG_NAME}"
@@ -227,11 +228,12 @@ jobs:
       - name: Checkout sync branch
         uses: actions/checkout@v6
         with:
-          ref: ${{ env.SYNC_BRANCH }}
+          ref: ${{ needs.resolve-version.outputs.sync_branch }}
 
       - name: Sync VERSION file to sync branch
         env:
           UPSTREAM_VERSION: ${{ needs.resolve-version.outputs.upstream_version }}
+          SYNC_BRANCH: ${{ needs.resolve-version.outputs.sync_branch }}
         shell: bash
         run: |
           set -euo pipefail
