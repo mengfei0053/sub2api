@@ -147,3 +147,4 @@ docs/*
 frontend/coverage/
 aicodex
 output/
+reports/
