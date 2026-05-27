@@ -7,7 +7,7 @@
       <div
         class="mx-auto flex h-16 max-w-content items-center justify-between px-margin-mobile md:px-margin-desktop"
       >
-        <router-link to="/home" class="flex shrink-0 items-center gap-2.5">
+        <router-link to="/" class="flex shrink-0 items-center gap-2.5">
           <img
             v-if="siteLogo"
             :src="siteLogo"
