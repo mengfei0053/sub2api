@@ -4,7 +4,7 @@ export const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/logo.png`
 
 export const DEFAULT_SITE_NAME = 'EbeeAI'
 
-export const PUBLIC_SITEMAP_PATHS = ['/home', '/login', '/register'] as const
+export const PUBLIC_SITEMAP_PATHS = ['/', '/login', '/register'] as const
 
 export type OrganizationStructuredData = {
   '@context': 'https://schema.org'

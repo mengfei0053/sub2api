@@ -10,7 +10,7 @@ describe('route seo helpers', () => {
   })
 
   it('builds canonical urls from the production origin', () => {
-    expect(resolveCanonicalUrl({ path: '/home' } as any)).toBe('https://ebeeai.net/home')
+    expect(resolveCanonicalUrl({ path: '/' } as any)).toBe('https://ebeeai.net/')
     expect(resolveCanonicalUrl({ path: '/login/' } as any)).toBe('https://ebeeai.net/login')
   })
 })
