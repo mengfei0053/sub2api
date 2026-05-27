@@ -148,6 +148,27 @@ process.exit(failed ? 1 : 0)
 NODE
 
 echo
+echo "3. Protected local brand assets"
+protected_assets=(
+  "public/logo.png"
+)
+for rel in "${protected_assets[@]}"; do
+  self="frontend_self/$rel"
+  upstream="frontend/$rel"
+  if [[ ! -e "$self" ]]; then
+    echo "FAIL protected asset missing: $self"
+    failed=1
+    continue
+  fi
+  if [[ -e "$upstream" ]] && cmp -s "$upstream" "$self"; then
+    echo "FAIL protected asset matches upstream (ours may have been overwritten): $self"
+    failed=1
+  else
+    echo "OK local brand asset preserved: $self"
+  fi
+done
+
+echo
 if [[ "$failed" -ne 0 ]]; then
   echo "FAIL: Sub2API rebase check found issues"
   exit 1
