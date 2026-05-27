@@ -105,7 +105,7 @@
                 </button>
               </div>
               <!-- Code Content -->
-              <pre class="p-4 text-sm font-mono text-gray-100 overflow-x-auto"><code v-if="file.highlighted" v-html="file.highlighted"></code><code v-else v-text="file.content"></code></pre>
+              <pre class="use-key-code-block p-4 text-sm font-mono text-gray-100 overflow-x-auto"><code v-if="file.highlighted" v-html="file.highlighted"></code><code v-else v-text="file.content"></code></pre>
             </div>
           </div>
         </div>
@@ -1062,3 +1062,11 @@ const copyContent = async (content: string, index: number) => {
   }
 }
 </script>
+
+<style scoped>
+.use-key-code-block::selection,
+.use-key-code-block :deep(*)::selection {
+  background: rgba(56, 189, 248, 0.35);
+  color: #f8fafc;
+}
+</style>
