@@ -42,31 +42,34 @@ EbeeAI 服务版本：0.0.1
 
 GitHub Actions 的 EbeeAI 发布 workflow 为 `.github/workflows/ebeeai-release.yml`，只会在推送 `v<上游>_<EbeeAI>` tag 时发布镜像和 GitHub Release。
 
-## 标准流程：从 main_self rebase 到上游 tag 创建 release 分支
+## 标准流程：在 release 分支上开发，发布新版本时 rebase 到上游 tag
 
-`main_self` 是 EbeeAI 自定义提交的长期维护分支。每次发布时，将 `main_self` 上的自定义提交 rebase 到最新上游 tag，再从结果创建 release 分支。上游提交在前，EbeeAI 提交在后。
+EbeeAI 的自定义提交直接维护在**当前 release 分支**上（不再使用 `main_self`）。日常开发就在当前 release 分支上进行。发布新上游版本时：把当前 release 分支上的 EbeeAI 提交 rebase 到最新上游 tag → 切出对应新版本的新 release 分支 → 之后在新 release 分支上继续开发。上游提交在前，EbeeAI 提交在后。
 
 ### 前置条件
 
-`main` 已与上游同步（见同步上游分支流程）。
+- `main` 已与上游同步、并已 fetch 到上游最新 tag（见同步上游分支流程）。
+- 当前 release 分支（如 `release/v${PREV_VERSION}`）是最新的 EbeeAI 开发分支。
 
 ### 步骤
 
-1. 确认版本号并设置变量：
+1. 确认版本号并设置变量（`PREV_VERSION` 是当前 release 基于的上游版本，`VERSION` 是要升到的新上游版本）：
 
 ```sh
-export VERSION=0.1.130
+export PREV_VERSION=0.1.131
+export VERSION=0.1.132
 export EBEEAI_VERSION=0.0.1
 ```
 
-2. 将 `main_self` 上的 EbeeAI 提交 rebase 到上游 tag：
+2. 从当前 release 分支切出新 release 分支，并把 EbeeAI 提交 rebase 到新上游 tag：
 
 ```sh
-git checkout main_self
-git rebase --onto upstream/v${VERSION} main
+git switch release/v${PREV_VERSION}
+git switch -c release/v${VERSION}
+git rebase --onto v${VERSION} v${PREV_VERSION}
 ```
 
-`--onto upstream/v${VERSION}` 是新的 base；`main` 是旧 base（只有在 main_self 上而不在 main 上的提交会被 replay）。
+`--onto v${VERSION}` 是新的 base；`v${PREV_VERSION}` 是旧 base（只有当前 release 上、不在旧上游 tag 上的 EbeeAI 提交会被 replay）。原 `release/v${PREV_VERSION}` 分支保持不动。
 
 3. 如果出现冲突，手动解决：
 
@@ -77,26 +80,29 @@ git add <resolved-files>
 git rebase --continue
 ```
 
-4. 强推更新后的 `main_self`（rebase 改写了历史）：
+4. 同步上游 `frontend/` 在 `${PREV_VERSION}→${VERSION}` 之间的变更到 `frontend_self/`（rebase 只 replay 我们的提交，不会自动并入上游新的前端改动）。运行 rebase 检查并按提示补齐：
 
 ```sh
-git push origin main_self --force-with-lease
+.claude/skills/sub2api-rebase-check/scripts/check-sub2api-rebase.sh v${PREV_VERSION} v${VERSION}
 ```
 
-5. 从当前 `main_self` 创建 release 分支：
+对差异/缺失文件做 3-way 合并或补齐，并把上游新增的 i18n key 并入 `frontend_self` 的 `en.ts`/`zh.ts`。注意保留 EbeeAI 定制（企业主题、首页 SEO 等）以及受保护资产 `frontend_self/public/logo.png`。
+
+5. 确认 `backend/cmd/server/VERSION` 等于新上游版本：
 
 ```sh
-git switch -c release/v${VERSION}
+echo "${VERSION}" > backend/cmd/server/VERSION
 ```
 
 6. 验证：
 
 ```sh
+cd frontend_self && pnpm run typecheck && cd ..
 docker compose --env-file deploy_ebeeai/.env.example -f deploy_ebeeai/docker-compose.yml config --quiet
 docker buildx build --check -f deploy_ebeeai/Dockerfile .
 ```
 
-7. 推送 release 分支：
+7. 推送新 release 分支：
 
 ```sh
 git push -u origin release/v${VERSION}
@@ -118,7 +124,9 @@ ghcr.io/<github-owner>/sub2api-ebeeai:sha-<commit>
 ghcr.io/<github-owner>/sub2api-ebeeai:latest
 ```
 
-同时会创建 GitHub Release，并把 `backend/cmd/server/VERSION` 同步回 `main_self`。
+同时会创建 GitHub Release，并把 `backend/cmd/server/VERSION` 同步回该 tag 对应的 release 分支（`release/v<上游版本>`）。
+
+9. 之后的开发都在新的 `release/v${VERSION}` 分支上进行，直到下次升级再重复本流程。
 
 ## 运维注意事项
 
