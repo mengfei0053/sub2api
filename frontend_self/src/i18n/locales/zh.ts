@@ -107,121 +107,6 @@ export default {
     },
     footer: {
       allRightsReserved: '保留所有权利。'
-    },
-    seo: {
-      title: 'AI API 网关_Claude GPT Gemini API 统一接入平台 {\'|\'} EbeeAI',
-      description:
-        'EbeeAI 是面向开发者和团队的 AI中转站与 AI API 网关，支持统一接入 Claude、GPT、Gemini 等主流模型，提供多模型中转、API Key 管理、用量统计、按量计费和稳定路由能力。',
-      defaultDescription:
-        'EbeeAI 是 AI中转站与 AI API 网关，为开发者和团队提供安全、稳定、可扩展的多模型统一接入服务。'
-    },
-    ebeeai: {
-      nav: {
-        features: '核心能力',
-        solutions: '数据实力',
-        pricing: '定价',
-        docs: '文档',
-        getStarted: '立即开始',
-        menu: '菜单'
-      },
-      hero: {
-        badge: '{name} Gateway 现已上线',
-        title: 'AI API 网关与',
-        titleLine2: '多模型统一接入平台',
-        subtitle:
-          '一个 API Key，统一接入 Claude、GPT、Gemini 等主流 AI 模型，适合 AI中转站、多模型路由、用量统计与按量计费等场景。',
-        trial: '立即申请试用',
-        readDocs: '阅读文档'
-      },
-      features: {
-        title: '核心能力',
-        subtitle: '企业级标准，全方位保障 AI 服务的高效稳定。',
-        items: {
-          performance: {
-            title: '高性能网关',
-            desc: '亚毫秒级延迟（<50ms），高吞吐量架构设计，轻松应对高并发调用场景，确保大模型服务稳定流畅。'
-          },
-          multiModel: {
-            title: '多模型适配',
-            desc: '统一 API 接口，无缝对接 OpenAI、Claude、Gemini 及主流开源大模型，降低模型切换与维护成本。'
-          },
-          security: {
-            title: '安全与合规',
-            desc: '内置内容过滤、敏感信息脱敏及细粒度权限控制，支持详尽审计日志，满足企业级数据安全与合规要求。'
-          },
-          cost: {
-            title: '成本控制',
-            desc: '智能语义缓存、请求合并与路由策略优化，多维度资源管理，显著降低大模型 API 调用及计算成本。'
-          }
-        }
-      },
-      stats: {
-        title: '数据证明实力',
-        subtitle: '专为复杂企业环境设计，提供金融级的稳定性与可扩展性。',
-        sla: 'SLA 可用性',
-        latency: '网关延迟',
-        tokens: '日处理 Token',
-        breaches: '数据泄露事件',
-        logTitle: '实时路由日志'
-      },
-      partners: {
-        label: '行业领先企业的共同选择'
-      },
-      faq: {
-        eyebrow: '常见问题',
-        title: '关于 EbeeAI 的常见问题',
-        items: {
-          whatIsEbeeai: {
-            question: 'EbeeAI 是什么？',
-            answer:
-              'EbeeAI 不是普通 AI 中转站，而是面向开发者和团队的 AI API 网关与多模型统一接入平台。通过一个 API Key，用户可以统一调用 Claude、GPT、Gemini 等主流 AI 模型。'
-          },
-          difference: {
-            question: 'EbeeAI 和普通 AI 中转站有什么区别？',
-            answer:
-              'EbeeAI 不是普通 AI 中转站，而是面向开发者和团队的 AI API 网关与多模型统一接入平台。它不仅支持 Claude、GPT、Gemini 等模型的统一接入，还提供 API Key 管理、多模型路由、用量统计、按量计费和稳定性保障。'
-          },
-          apiGateway: {
-            question: '什么是 AI API 网关？',
-            answer:
-              'AI API 网关是连接用户应用和多个 AI 模型服务的统一入口，可以把 Claude、GPT、Gemini 等不同模型统一到一套 API 调用方式中，并提供权限、用量、计费和稳定性管理能力。'
-          },
-          models: {
-            question: 'EbeeAI 支持哪些 AI 模型？',
-            answer:
-              'EbeeAI 支持统一接入 Claude、GPT、Gemini 等主流 AI 模型，并可根据平台配置扩展更多模型，适合 AI 应用、Agent、RAG 知识库、多模型测试和企业内部工具。'
-          },
-          apiKey: {
-            question: '如何获取 EbeeAI 的 API Key？',
-            answer:
-              '用户注册并登录 EbeeAI 后，可以在控制台创建和管理自己的 API Key。创建后即可用于调用已接入的 AI 模型，并查看调用记录、用量统计、余额和额度情况。'
-          },
-          costControl: {
-            question: 'EbeeAI 是否支持用量统计和成本控制？',
-            answer:
-              '支持。EbeeAI 提供 API 调用用量统计、费用统计和额度管理能力，帮助个人开发者和团队了解每个 API Key 的使用情况，避免成本失控。'
-          }
-        }
-      },
-      cta: {
-        title: '准备好升级您的',
-        titleLine2: 'AI 基础设施了吗？',
-        button: '开始集成 {name} Gateway'
-      },
-      footer: {
-        privacy: '隐私政策',
-        terms: '服务条款',
-        security: '安全',
-        status: '状态'
-      },
-      routingLog: {
-        openai: '路由: OpenAI_GPT4',
-        cache: '缓存命中',
-        claude: '路由: Claude_3_Opus',
-        blocked: '过滤: 敏感拦截',
-        llama: '路由: Llama_3_Local',
-        blockedTag: '已拦截'
-      }
     }
   },
 
@@ -507,10 +392,6 @@ export default {
 
   // Auth
   auth: {
-    seo: {
-      loginDescription: '登录 EbeeAI，访问企业级 AI API 网关控制台。',
-      registerDescription: '注册 EbeeAI 账户，开始使用统一 AI 模型接入与网关服务。'
-    },
     welcomeBack: '欢迎回来',
     signInToAccount: '登录您的账户以继续',
     signIn: '登录',
@@ -752,6 +633,15 @@ export default {
     platformBreakdownEmpty: '暂无平台用量',
     platformCount: '{count} 个平台',
     platformOther: '其他',
+    platformQuota: {
+      title: '配额用量',
+      daily: '日',
+      weekly: '周',
+      monthly: '月（近30天）',
+      resetsAt: '{time} 重置',
+      noLimit: '不限制',
+      disabled: '已禁用',
+    },
     tokenUsageTrend: 'Token 使用趋势',
     noDataAvailable: '暂无数据',
     model: '模型',
@@ -1933,6 +1823,7 @@ export default {
         groups: '分组',
         subscriptions: '订阅分组',
         balance: '余额',
+        balancePlatformQuota: '余额(平台配额)',
         usage: '用量',
         usageAnthropic: '用量 (Claude)',
         usageOpenAI: '用量 (OpenAI)',
@@ -2157,6 +2048,41 @@ export default {
         failedToReorder: '更新排序失败',
         keyExists: '属性键已存在',
         dragToReorder: '拖拽排序'
+      },
+      platformQuota: {
+        menuItem: '平台限额',
+        title: '平台限额',
+        subtitle: '为用户 {email} 配置各上游平台的日 / 周 / 月用量上限',
+        columns: {
+          platform: '平台',
+          daily: '日 (USD)',
+          weekly: '周 (USD)',
+          monthly: '月 (USD, 30天滚动)',
+          usage: '当前用量',
+        },
+        placeholder: '不限制',
+        save: '保存',
+        saving: '保存中...',
+        cancel: '取消',
+        clearAll: '全部清空（取消所有限额）',
+        clearAllConfirm: '确认清空全部平台的日 / 周 / 月限额？所有平台将变为"无限额"，本地无法撤销，需要在保存前手动重填。',
+        reset: {
+          button: '重置该窗口',
+          confirm: '确认重置该用户 {platform} 平台的 {window} 用量？此操作立即生效。',
+          success: '已重置 {platform} {window} 用量',
+          failed: '重置失败',
+        },
+        updateSuccess: '平台限额已更新',
+        updateFailed: '保存失败',
+        loadFailed: '加载失败',
+        hint: '留空 = 不限制该窗口。',
+        windowDaily: '日',
+        windowWeekly: '周',
+        windowMonthly: '月',
+        cellNotConfigured: '未配置',
+        cellColumnTooltip: '仅展示已设限额的平台',
+        subscriptionWarning: '此用户有活跃订阅，平台限额仅在余额（标准）模式下生效，订阅模式请求不受此限额约束。',
+        invalidNumber: '以下字段填写不是合法数字，请修正后再保存：{fields}',
       }
     },
 
@@ -2760,11 +2686,17 @@ export default {
       lastCleanup: '上次清理：{time}',
       cleanupStats: '上次清理删除命中 {hit} 条，未命中 {nonHit} 条',
       riskSwitchOff: '系统开关关闭',
+      riskThresholds: '风险阈值',
+      riskThresholdsHint: '按 OpenAI Moderations 分类调整命中阈值，分数达到或超过阈值即视为命中。',
+      riskThresholdDefault: '默认 {value}',
+      riskThresholdReset: '恢复默认阈值',
+      riskThresholdPercent: '阈值百分比',
       tabs: {
         basic: '基础',
         scope: '审计范围',
         runtime: '运行队列',
         response: '命中通知',
+        riskThresholds: '风险阈值',
         keywords: '关键词拦截',
         retention: '日志保留',
       },
@@ -5745,7 +5677,17 @@ export default {
         defaultSubscriptionsEmpty: '未配置默认订阅。新用户不会自动获得订阅套餐。',
         defaultSubscriptionsDuplicate: '默认订阅存在重复分组：{groupId}。每个分组只能出现一次。',
         subscriptionGroup: '订阅分组',
-        subscriptionValidityDays: '有效期（天）'
+        subscriptionValidityDays: '有效期（天）',
+        defaultPlatformQuotas: '默认平台限额（注册时分配）',
+        defaultPlatformQuotasHint: '新用户注册时自动写入平台限额记录；已有用户不受影响。留空 = 该平台该窗口不限制。',
+        platformQuotaNotice: '月限额为 30 天滚动窗口，非自然月',
+      },
+      platformQuota: {
+        platform:    '平台',
+        daily:       '日限额 (USD)',
+        weekly:      '周限额 (USD)',
+        monthly:     '月限额 (USD, 30天滚动)',
+        placeholder: '不限',
       },
       claudeCode: {
         title: 'Claude Code 设置',
@@ -6465,7 +6407,9 @@ export default {
         grantOnFirstBindHint: '已有账号首次绑定该来源时发放默认权益。',
         defaultSubscriptionsLabel: '默认订阅',
         defaultSubscriptionsHint: '仅对当前认证来源生效，未配置时不追加来源专属订阅。',
-        noSourceSubscriptions: '当前来源未配置专属默认订阅。'
+        noSourceSubscriptions: '当前来源未配置专属默认订阅。',
+        platformQuotasOverride: '平台限额覆盖',
+        platformQuotasOverrideHint: '留空的字段继承「系统默认平台限额」；填 0 表示禁止该窗口使用。',
       },
       paymentVisibleMethods: {
         methodLabel: '{title} 可见方式',
