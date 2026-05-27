@@ -3262,6 +3262,71 @@
                   </div>
                 </div>
               </div>
+
+              <!-- ★ 新增：系统全局默认平台限额矩阵 -->
+              <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
+                <div class="mb-3">
+                  <label class="font-medium text-gray-900 dark:text-white">
+                    {{ t("admin.settings.defaults.defaultPlatformQuotas") }}
+                  </label>
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    {{ t("admin.settings.defaults.defaultPlatformQuotasHint") }}
+                  </p>
+                  <p class="mt-0.5 text-xs text-amber-600 dark:text-amber-400">
+                    {{ t("admin.settings.defaults.platformQuotaNotice") }}
+                  </p>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="min-w-full text-sm">
+                    <thead>
+                      <tr class="text-left text-xs text-gray-500 dark:text-gray-400">
+                        <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.platform") }}</th>
+                        <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.daily") }}</th>
+                        <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.weekly") }}</th>
+                        <th class="pb-2 font-medium">{{ t("admin.settings.platformQuota.monthly") }}</th>
+                      </tr>
+                    </thead>
+                    <tbody class="space-y-2">
+                      <tr v-for="p in (['anthropic', 'openai', 'gemini', 'antigravity'] as const)" :key="p" class="align-top">
+                        <td class="pr-4 py-1">
+                          <span class="font-mono text-xs text-gray-700 dark:text-gray-300">{{ p }}</span>
+                        </td>
+                        <td class="pr-4 py-1">
+                          <input
+                            v-model.number="form.default_platform_quotas[p]!.daily"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            class="input h-8 w-28 text-sm"
+                            :placeholder="t('admin.settings.platformQuota.placeholder')"
+                          />
+                        </td>
+                        <td class="pr-4 py-1">
+                          <input
+                            v-model.number="form.default_platform_quotas[p]!.weekly"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            class="input h-8 w-28 text-sm"
+                            :placeholder="t('admin.settings.platformQuota.placeholder')"
+                          />
+                        </td>
+                        <td class="py-1">
+                          <input
+                            v-model.number="form.default_platform_quotas[p]!.monthly"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            class="input h-8 w-28 text-sm"
+                            :placeholder="t('admin.settings.platformQuota.placeholder')"
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <!-- /全局平台限额矩阵 -->
             </div>
           </div>
 
@@ -3535,6 +3600,68 @@
                         </div>
                       </div>
                     </div>
+
+                    <!-- ★ 新增：auth source 平台限额覆盖区块 -->
+                    <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
+                      <div class="mb-3">
+                        <label class="font-medium text-gray-900 dark:text-white">
+                          {{ t("admin.settings.authSourceDefaults.platformQuotasOverride") }}
+                        </label>
+                        <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                          {{ t("admin.settings.authSourceDefaults.platformQuotasOverrideHint") }}
+                        </p>
+                      </div>
+                      <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                          <thead>
+                            <tr class="text-left text-xs text-gray-500 dark:text-gray-400">
+                              <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.platform") }}</th>
+                              <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.daily") }}</th>
+                              <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.weekly") }}</th>
+                              <th class="pb-2 font-medium">{{ t("admin.settings.platformQuota.monthly") }}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="p in (['anthropic', 'openai', 'gemini', 'antigravity'] as const)" :key="`${authSource.source}-pq-${p}`" class="align-top">
+                              <td class="pr-4 py-1">
+                                <span class="font-mono text-xs text-gray-700 dark:text-gray-300">{{ p }}</span>
+                              </td>
+                              <td class="pr-4 py-1">
+                                <input
+                                  v-model.number="authSourceDefaults[authSource.source].platform_quotas[p]!.daily"
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  class="input h-8 w-28 text-sm"
+                                  :placeholder="t('admin.settings.platformQuota.placeholder')"
+                                />
+                              </td>
+                              <td class="pr-4 py-1">
+                                <input
+                                  v-model.number="authSourceDefaults[authSource.source].platform_quotas[p]!.weekly"
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  class="input h-8 w-28 text-sm"
+                                  :placeholder="t('admin.settings.platformQuota.placeholder')"
+                                />
+                              </td>
+                              <td class="py-1">
+                                <input
+                                  v-model.number="authSourceDefaults[authSource.source].platform_quotas[p]!.monthly"
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  class="input h-8 w-28 text-sm"
+                                  :placeholder="t('admin.settings.platformQuota.placeholder')"
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <!-- /auth source 平台限额覆盖区块 -->
                   </div>
                 </div>
               </div>
@@ -5813,10 +5940,10 @@
                       <button
                         type="button"
                         :class="[
-                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-enterprise-primary/20 focus:ring-offset-2',
+                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
                           form.payment_cancel_rate_limit_enabled
-                            ? 'bg-enterprise-primary'
-                            : 'bg-enterprise-surface-container-high',
+                            ? 'bg-primary-500'
+                            : 'bg-gray-300 dark:bg-dark-600',
                         ]"
                         @click="
                           form.payment_cancel_rate_limit_enabled =
@@ -5903,10 +6030,10 @@
                       <button
                         type="button"
                         :class="[
-                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-enterprise-primary/20 focus:ring-offset-2',
+                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
                           form.payment_alipay_force_qrcode
-                            ? 'bg-enterprise-primary'
-                            : 'bg-enterprise-surface-container-high',
+                            ? 'bg-primary-500'
+                            : 'bg-gray-300 dark:bg-dark-600',
                         ]"
                         @click="
                           form.payment_alipay_force_qrcode =
@@ -6411,7 +6538,7 @@
                         class="sr-only peer"
                       />
                       <div
-                        class="w-9 h-5 bg-enterprise-surface-container-high peer-focus:outline-none rounded-full peer dark:bg-enterprise-surface-container-high peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:after:border-gray-500 peer-checked:bg-enterprise-primary"
+                        class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:after:border-gray-500 peer-checked:bg-primary-600"
                       ></div>
                     </label>
                     <input
@@ -6530,6 +6657,8 @@ import { adminAPI } from "@/api";
 import {
   appendAuthSourceDefaultsToUpdateRequest,
   buildAuthSourceDefaultsState,
+  normalizePlatformQuotasMap,
+  sanitizePlatformQuotasMap,
   defaultWeChatConnectScopesForMode,
   deriveWeChatConnectStoredMode,
   normalizeDefaultSubscriptionSettings,
@@ -6541,6 +6670,7 @@ import type {
   SystemSettings,
   UpdateSettingsRequest,
   DefaultSubscriptionSetting,
+  DefaultPlatformQuotasMap,
   OpenAIFastPolicyRule,
   WeChatConnectMode,
   WebSearchEmulationConfig,
@@ -6835,6 +6965,8 @@ type SettingsForm = Omit<
   google_oauth_client_secret: string;
   force_email_on_third_party_signup: boolean;
   openai_advanced_scheduler_enabled: boolean;
+  // 系统全局平台限额 map；form 内始终归一化为全 4 平台对象（模板非空绑定依赖此不变量）
+  default_platform_quotas: DefaultPlatformQuotasMap;
 };
 
 const form = reactive<SettingsForm>({
@@ -6851,6 +6983,7 @@ const form = reactive<SettingsForm>({
   login_agreement_updated_at: "2026-03-31",
   login_agreement_documents: defaultLoginAgreementDocuments(),
   default_balance: 0,
+  default_platform_quotas: normalizePlatformQuotasMap() as DefaultPlatformQuotasMap,
   affiliate_rebate_rate: 20,
   affiliate_rebate_freeze_hours: 0,
   affiliate_rebate_duration_days: 0,
@@ -7659,6 +7792,7 @@ async function loadSettings() {
           }))
         : defaultLoginAgreementDocuments();
     Object.assign(authSourceDefaults, buildAuthSourceDefaultsState(settings));
+    form.default_platform_quotas = normalizePlatformQuotasMap(settings.default_platform_quotas);
     form.backend_mode_enabled = settings.backend_mode_enabled;
     form.default_subscriptions = normalizeDefaultSubscriptionSettings(
       settings.default_subscriptions,
@@ -8212,6 +8346,7 @@ async function saveSettings() {
       };
     }
 
+    payload.default_platform_quotas = sanitizePlatformQuotasMap(form.default_platform_quotas);
     appendAuthSourceDefaultsToUpdateRequest(payload, authSourceDefaults);
 
     const updated = await adminAPI.settings.updateSettings(payload);
@@ -8222,6 +8357,7 @@ async function saveSettings() {
       }
     }
     Object.assign(authSourceDefaults, buildAuthSourceDefaultsState(updated));
+    form.default_platform_quotas = normalizePlatformQuotasMap(updated.default_platform_quotas);
     registrationEmailSuffixWhitelistTags.value =
       normalizeRegistrationEmailSuffixDomains(
         updated.registration_email_suffix_whitelist,
@@ -9504,7 +9640,7 @@ watch(
 }
 
 .settings-tab {
-  @apply relative isolate flex h-10 min-w-[6.75rem] shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border border-transparent px-3 text-sm font-medium text-enterprise-secondary outline-none transition-colors duration-200 ease-out;
+  @apply relative isolate flex h-10 min-w-[6.75rem] shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border border-transparent px-3 text-sm font-medium text-gray-600 outline-none transition-colors duration-200 ease-out dark:text-gray-300;
 }
 
 @media (min-width: 768px) {
@@ -9533,11 +9669,11 @@ watch(
 }
 
 .settings-tab:focus-visible {
-  @apply ring-2 ring-enterprise-primary/20 ring-offset-2 ring-offset-enterprise-background;
+  @apply ring-2 ring-primary-500/40 ring-offset-2 ring-offset-white dark:ring-offset-dark-900;
 }
 
 .settings-tab-active {
-  @apply border-enterprise-outline-variant bg-enterprise-surface-container-lowest text-enterprise-primary shadow-sm;
+  @apply border-primary-200/80 bg-white text-primary-700 shadow-sm dark:border-primary-400/30 dark:bg-dark-700/95 dark:text-primary-200;
   box-shadow:
     0 8px 18px rgb(15 23 42 / 0.08),
     0 1px 0 rgb(255 255 255 / 0.92) inset;
@@ -9555,20 +9691,20 @@ watch(
   height: 2px;
   border-radius: 9999px;
   content: "";
-  background: theme('colors.enterprise.primary');
+  background: linear-gradient(90deg, #14b8a6, #0ea5e9);
 }
 
 .settings-tab-icon {
-  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-enterprise-secondary transition-colors duration-200;
+  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors duration-200 dark:text-gray-400;
 }
 
 .settings-tab:hover .settings-tab-icon,
 .settings-tab:focus-visible .settings-tab-icon {
-  @apply text-enterprise-on-surface;
+  @apply text-gray-700 dark:text-gray-200;
 }
 
 .settings-tab-active .settings-tab-icon {
-  @apply bg-enterprise-surface-container-low text-enterprise-primary;
+  @apply bg-primary-50 text-primary-600 dark:bg-primary-400/10 dark:text-primary-300;
 }
 
 .settings-tab-label {
