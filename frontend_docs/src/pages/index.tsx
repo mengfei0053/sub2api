@@ -13,7 +13,7 @@ export default function Home(): ReactNode {
 
   return (
     <Layout
-      title={homeContent.seo.title}
+      title={homeContent.seo.pageTitle}
       description={homeContent.seo.description}
       noFooter
       wrapperClassName={styles.homepageWrapper}>
