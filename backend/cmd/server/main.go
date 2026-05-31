@@ -1,6 +1,32 @@
+// Sub2API HTTP API.
+//
+//	@title			Sub2API API
+//	@version		0.1.133
+//	@description	Sub2API REST API and AI gateway (Claude / OpenAI / Gemini compatible).
+//	@termsOfService	https://sub2api.org
+//
+//	@contact.name	Sub2API
+//	@contact.url	https://sub2api.org
+//
+//	@license.name	MIT
+//	@license.url	https://opensource.org/licenses/MIT
+//
+//	@host		localhost:8080
+//	@BasePath	/
+//
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
+//	@description				JWT token for console API (`Bearer <token>`)
+//
+//	@securityDefinitions.apikey	APIKeyAuth
+//	@in							header
+//	@name						Authorization
+//	@description				API key for AI gateway (`Bearer sk-...`)
 package main
 
 //go:generate go run github.com/google/wire/cmd/wire
+//go:generate go run github.com/swaggo/swag/cmd/swag@v1.16.4 init -g main.go -d .,../../internal/server/swagger -o ../../docs --parseDependency --parseInternal --outputTypes go,json,yaml
 
 import (
 	"context"
