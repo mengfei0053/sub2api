@@ -7,10 +7,8 @@
 .gitignore
 .gitattributes
 
-# Documentation
-*.md
-!deploy/DOCKER.md
-docs/
+# Documentation (repo root only; keep frontend_docs/docs for split deploy builds)
+/docs/
 
 # IDE
 .idea/
