@@ -1,0 +1,100 @@
+---
+sidebar_position: 8
+---
+
+# 接入 Oh My Pi
+
+Oh My Pi（OMP）是终端 AI 编程 Agent。通过自定义 `models.yml` 可将 EbeeAI 配置为 OpenAI 兼容供应商。
+
+:::caution 不要依赖内置条目
+较新版本可能列出内置模型，但缺少关键 compat 配置。在 thinking mode 下带 tool call 的长对话可能返回 400。**始终使用下方完整 `models.yml` 配置。**
+:::
+
+## 1. 安装 Oh My Pi
+
+参考 [Oh My Pi 官方文档](https://github.com/openagentlabs/oh-my-pi) 安装。
+
+## 2. 创建模型配置
+
+编辑 `~/.omp/agent/models.yml`：
+
+```yaml
+providers:
+  ebeeai:
+    baseUrl: https://ebeeai.net/v1
+    api: openai-completions
+    apiKey: $EBEEAI_API_KEY
+    models:
+      - id: claude-sonnet-4-20250514
+        name: Claude Sonnet 4
+        reasoning: true
+        input: [text]
+        contextWindow: 200000
+        maxTokens: 8192
+        compat:
+          supportsDeveloperRole: false
+          supportsReasoningEffort: true
+          maxTokensField: max_tokens
+          reasoningEffortMap:
+            minimal: high
+            low: high
+            medium: high
+            high: high
+            xhigh: max
+          supportsToolChoice: false
+          requiresReasoningContentForToolCalls: true
+          requiresAssistantContentForToolCalls: true
+          extraBody:
+            type: enabled
+      - id: gpt-5.4
+        name: GPT-5.4
+        reasoning: true
+        input: [text]
+        contextWindow: 400000
+        maxTokens: 128000
+        compat:
+          supportsDeveloperRole: false
+          supportsReasoningEffort: true
+          maxTokensField: max_tokens
+          reasoningEffortMap:
+            minimal: high
+            low: high
+            medium: high
+            high: high
+            xhigh: max
+          supportsToolChoice: false
+          requiresReasoningContentForToolCalls: true
+          requiresAssistantContentForToolCalls: true
+          extraBody:
+            type: enabled
+```
+
+## 3. 设置 API Key
+
+**macOS / Linux：**
+
+```bash
+export EBEEAI_API_KEY=<你的 EbeeAI API Key>
+```
+
+**Windows PowerShell：**
+
+```powershell
+$env:EBEEAI_API_KEY="<你的 EbeeAI API Key>"
+```
+
+## 4. 选择模型
+
+启动 OMP 后，输入 `/model`，选择 `ebeeai` 供应商下的模型。
+
+:::note compat 说明
+`models.yml` 的 `compat` 是整块替换，不跟内置条目合并，因此必须写全，不能只补缺的字段。
+:::
+
+## 故障排查
+
+| 现象 | 处理方式 |
+|------|----------|
+| 400 错误（tool call + thinking） | 确认使用了完整 compat 配置，勿用内置条目 |
+| 401 | 检查 `EBEEAI_API_KEY` 环境变量或 `apiKey` 字段 |
+| 模型不可用 | 确认 `id` 与 EbeeAI 路由模型名一致 |
