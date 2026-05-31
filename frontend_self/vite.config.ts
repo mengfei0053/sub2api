@@ -61,7 +61,8 @@ export default defineConfig(({ mode }) => {
     __INTLIFY_JIT_COMPILATION__: true
   },
   build: {
-    outDir: '../backend/internal/web/dist',
+    outDir: process.env.VITE_OUT_DIR || '../backend/internal/web/dist',
+    assetsDir: 'app-assets',
     emptyOutDir: true,
     rollupOptions: {
       output: {
