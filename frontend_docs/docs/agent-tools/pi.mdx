@@ -1,0 +1,123 @@
+---
+sidebar_position: 11
+---
+
+# 接入 Pi
+
+Pi（pi-mono）是一个极简且高度可扩展的终端编码框架，支持 TypeScript 扩展、技能、提示模板和主题，以及树状会话结构。
+
+## 1. 安装 Pi
+
+```bash
+npm install -g @anthropic-ai/pi
+```
+
+或使用 pi 官方推荐的安装方式，参考 [pi-mono 文档](https://github.com/badlogic/pi-mono)。
+
+## 2. 配置自定义供应商
+
+Pi 通过 `models.json` 支持自定义供应商。编辑 `~/.pi/agent/models.json`：
+
+```json
+{
+  "providers": {
+    "ebeeai": {
+      "baseUrl": "https://ebeeai.net/v1",
+      "api": "openai-completions",
+      "apiKey": "$EBEEAI_API_KEY",
+      "models": [
+        {
+          "id": "claude-sonnet-4-20250514",
+          "name": "Claude Sonnet 4",
+          "contextWindow": 200000,
+          "maxTokens": 8192,
+          "input": ["text"],
+          "reasoning": true,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "requiresReasoningContentOnAssistantMessages": true,
+            "thinkingFormat": "openai",
+            "reasoningEffortMap": {
+              "minimal": "high",
+              "low": "high",
+              "medium": "high",
+              "high": "high",
+              "xhigh": "max"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.4",
+          "name": "GPT-5.4",
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "input": ["text"],
+          "reasoning": true,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "requiresReasoningContentOnAssistantMessages": true,
+            "thinkingFormat": "openai",
+            "reasoningEffortMap": {
+              "minimal": "high",
+              "low": "high",
+              "medium": "high",
+              "high": "high",
+              "xhigh": "max"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+## 3. 设置 API Key
+
+**macOS / Linux：**
+
+```bash
+export EBEEAI_API_KEY=<你的 EbeeAI API Key>
+```
+
+**Windows PowerShell：**
+
+```powershell
+$env:EBEEAI_API_KEY="<你的 EbeeAI API Key>"
+```
+
+## 4. 选择模型
+
+启动 Pi 后，输入 `/model` 打开模型切换器：
+
+1. 选择 `ebeeai` 供应商
+2. 选择 `Claude Sonnet 4` 或 `GPT-5.4` 等已配置模型
+
+## 5. 开始使用
+
+```bash
+cd /path/to/my-project
+pi
+```
+
+:::tip 控制台参考
+EbeeAI 控制台 **API Key → 使用 Key** 弹窗提供 Claude Code、OpenCode 等工具的现成配置，可作为 Pi 配置的参考。
+:::
+
+## 故障排查
+
+| 现象 | 处理方式 |
+|------|----------|
+| 401 | 检查 `EBEEAI_API_KEY` 是否正确 |
+| 模型列表为空 | 确认 `models.json` 路径与 JSON 格式 |
+| tool call 报错 | 调整 `compat` 字段，参考上方完整配置 |
