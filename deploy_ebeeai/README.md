@@ -3,7 +3,7 @@
 这个目录存放 EbeeAI 专用的 Docker 部署文件。这里的文件不会改动仓库原有的
 `Dockerfile` 或 `deploy/docker-compose*.yml`。
 
-EbeeAI 镜像的前端构建源为 `frontend_self/`（本地 UI 定制副本），不是上游对齐的
+EbeeAI 镜像的前端构建源为 `frontend_self/`（控制台 SPA）与 `frontend_docs/`（营销首页与文档），不是上游对齐的
 `frontend/`。
 
 - **日常 UI/功能改动**：只修改 `frontend_self/`，不要改 `frontend/`。
@@ -11,6 +11,29 @@ EbeeAI 镜像的前端构建源为 `frontend_self/`（本地 UI 定制副本）�
 
 发布前若刚同步 upstream，请先运行 `make check-frontend-self-sync` 确认
 `frontend_self/` 已跟进必要的 API/路由/i18n 变更。
+
+## 架构与路由
+
+生产环境由 4 个容器组成，对外只暴露 `gateway` 的端口（默认 `8080`）：
+
+| 服务 | 镜像后缀 | 职责 |
+|------|----------|------|
+| `gateway` | `-gateway` | 按路径转发 |
+| `backend` | `-backend` | Go API |
+| `frontend_self` | `-app` | 控制台 SPA |
+| `frontend_docs` | `-docs` | 营销首页 + 文档站 |
+
+网关路由（`deploy_ebeeai/nginx/gateway.conf`）：
+
+| 路径 | 目标 |
+|------|------|
+| `/`、`/docs/*`、`/doc/*`（重写到 `/docs/`）、`/assets/*`、`/img/*` | `frontend_docs` |
+| `/api/*`、`/v1/*`、`/health`、`/setup/*` 等 API | `backend` |
+| 其余（如 `/login`、`/dashboard`、`/admin`） | `frontend_self` |
+
+`frontend_self` 静态资源使用 `/app-assets/`，避免与文档站 `/assets/` 冲突。
+
+旧版单容器镜像（`deploy_ebeeai/Dockerfile`，backend embed 前端）仍保留，仅供回滚或手动构建；当前 compose 使用拆分栈。
 
 ## 发布到 1Panel 容器编排
 
@@ -162,7 +185,7 @@ SUB2API_HOST_PORT=18080
 
 ```sh
 curl -fsS http://127.0.0.1:18080/health
-docker logs --tail=100 sub2api
+docker logs --tail=100 sub2api-gateway
 ```
 
 验证通过后，在 1Panel 停止这套临时编排。
@@ -172,7 +195,7 @@ docker logs --tail=100 sub2api
 ```sh
 SUB2API_BIND_HOST=127.0.0.1
 SUB2API_HOST_PORT=18080
-docker compose --env-file .env up -d sub2api
+docker compose --env-file .env up -d
 curl -fsS http://127.0.0.1:18080/health
 docker compose --env-file .env down
 ```

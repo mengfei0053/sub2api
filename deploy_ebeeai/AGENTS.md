@@ -12,5 +12,6 @@
 ## Local Notes
 - Check local README files before changing behavior or docs in this subtree.
 - YAML files are configuration surfaces; preserve comments and ordering when possible.
-- EbeeAI Docker builds embed `frontend_self/`, not `frontend/` (`deploy_ebeeai/Dockerfile`, `FRONTEND_DIR=frontend_self`).
+- EbeeAI Docker builds use `frontend_self/` + `frontend_docs/` with split nginx routing (`deploy_ebeeai/docker-compose.yml`).
+- Legacy monolith embed build remains in `deploy_ebeeai/Dockerfile` for manual use only.
 - Edit `frontend_self/` for local/EbeeAI UI and behavior; edit `frontend/` only when syncing upstream.
