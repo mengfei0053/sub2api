@@ -13,6 +13,8 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/service"
 	"github.com/Wei-Shaw/sub2api/internal/web"
 
+	_ "github.com/Wei-Shaw/sub2api/docs"
+
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 )
@@ -115,6 +117,7 @@ func registerRoutes(
 ) {
 	// 通用路由（健康检查、状态等）
 	routes.RegisterCommonRoutes(r)
+	routes.RegisterSwaggerRoutes(r)
 
 	// API v1
 	v1 := r.Group("/api/v1")
