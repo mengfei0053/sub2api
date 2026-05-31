@@ -1,0 +1,70 @@
+---
+sidebar_position: 3
+---
+
+# 接入 GitHub Copilot
+
+GitHub Copilot Chat 支持 Agent 模式、工具调用、Skills 和 MCP。通过配置自定义模型端点，可将 Copilot Chat 的请求路由到 EbeeAI。
+
+:::info 前提条件
+- VS Code 1.116 或更高版本
+- 已启用 GitHub Copilot 订阅（Free / Pro / Enterprise 均可）
+:::
+
+## 1. 获取 EbeeAI API Key
+
+在 [EbeeAI 控制台](https://ebeeai.net) 创建 API Key，并确认 Base URL（示例：`https://ebeeai.net/v1`）。
+
+## 2. 配置自定义模型（BYOK）
+
+GitHub Copilot 支持通过环境变量配置外部模型提供商。将 Copilot 指向 EbeeAI 的 Anthropic 兼容端点：
+
+**macOS / Linux：**
+
+```bash
+export COPILOT_PROVIDER_TYPE=anthropic
+export COPILOT_PROVIDER_BASE_URL=https://ebeeai.net/v1
+export COPILOT_PROVIDER_API_KEY=<你的 EbeeAI API Key>
+export COPILOT_MODEL=claude-sonnet-4-20250514
+```
+
+**Windows PowerShell：**
+
+```powershell
+$env:COPILOT_PROVIDER_TYPE="anthropic"
+$env:COPILOT_PROVIDER_BASE_URL="https://ebeeai.net/v1"
+$env:COPILOT_PROVIDER_API_KEY="<你的 EbeeAI API Key>"
+$env:COPILOT_MODEL="claude-sonnet-4-20250514"
+```
+
+:::tip 模型名称
+`COPILOT_MODEL` 需填写 EbeeAI 路由中可用的 Claude 模型 ID，可在控制台分组配置中查看。
+:::
+
+## 3. 在 VS Code 中使用
+
+1. 从上述终端启动 VS Code，确保环境变量已生效：
+
+```bash
+code .
+```
+
+2. 打开 Copilot Chat（`Cmd+Shift+I` / `Ctrl+Shift+I`）。
+3. 选择 Agent 模式，开始对话。
+
+## 4. 可选：Token 限制
+
+若模型不在 Copilot 内置目录中，建议显式配置：
+
+```bash
+export COPILOT_PROVIDER_MAX_PROMPT_TOKENS=200000
+export COPILOT_PROVIDER_MAX_OUTPUT_TOKENS=8192
+```
+
+## 故障排查
+
+| 现象 | 处理方式 |
+|------|----------|
+| 401 认证失败 | 检查 API Key 与分组权限 |
+| 400 reasoning_content 错误 | 改用 `anthropic` provider type，勿使用 `openai` |
+| 模型不可用 | 确认 `COPILOT_MODEL` 与 EbeeAI 路由模型名一致 |

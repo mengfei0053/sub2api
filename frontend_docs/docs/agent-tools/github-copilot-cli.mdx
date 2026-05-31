@@ -1,0 +1,81 @@
+---
+sidebar_position: 4
+---
+
+# 接入 GitHub Copilot CLI
+
+通过 BYOK（自带密钥）模式，可将 GitHub Copilot CLI 配置为使用 EbeeAI 上的 Claude 模型。
+
+:::caution 重要提示
+请使用 `anthropic` 作为 provider type。使用 `openai` 类型可能触发 `400` 错误（reasoning_content 回传问题）。Anthropic Messages API 端点可完全避免此问题。
+:::
+
+## 1. 安装 GitHub Copilot CLI
+
+```bash
+npm install -g @github/copilot
+```
+
+验证安装：
+
+```bash
+copilot --version
+```
+
+## 2. 获取 EbeeAI API Key
+
+在 [EbeeAI 控制台](https://ebeeai.net) 创建 API Key。
+
+## 3. 配置环境变量
+
+**macOS / Linux：**
+
+```bash
+export COPILOT_PROVIDER_TYPE=anthropic
+export COPILOT_PROVIDER_BASE_URL=https://ebeeai.net/v1
+export COPILOT_PROVIDER_API_KEY=<你的 EbeeAI API Key>
+export COPILOT_MODEL=claude-sonnet-4-20250514
+```
+
+**Windows PowerShell：**
+
+```powershell
+$env:COPILOT_PROVIDER_TYPE="anthropic"
+$env:COPILOT_PROVIDER_BASE_URL="https://ebeeai.net/v1"
+$env:COPILOT_PROVIDER_API_KEY="<你的 EbeeAI API Key>"
+$env:COPILOT_MODEL="claude-sonnet-4-20250514"
+```
+
+:::tip 切换模型
+修改 `COPILOT_MODEL` 为 EbeeAI 路由中可用的其他 Claude 模型 ID 即可切换。
+:::
+
+## 4. 启动 Copilot CLI
+
+```bash
+cd /path/to/my-project
+copilot
+```
+
+完整支持 Agent 模式、工具调用和 MCP。
+
+## 可选配置
+
+**Token 限制：**
+
+```bash
+export COPILOT_PROVIDER_MAX_PROMPT_TOKENS=200000
+export COPILOT_PROVIDER_MAX_OUTPUT_TOKENS=8192
+```
+
+**离线模式（仅阻止 GitHub API 调用）：**
+
+```bash
+export COPILOT_OFFLINE=true
+```
+
+:::note
+离线模式下，提示词仍会发送到 EbeeAI — 仅阻止 GitHub 侧的 API 调用。
+:::
+
+运行 `copilot help providers` 查看所有可用环境变量。
