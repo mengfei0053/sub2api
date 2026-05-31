@@ -1,0 +1,64 @@
+---
+sidebar_position: 9
+---
+
+# 接入 OpenClaw
+
+OpenClaw 是一个开源的个人 AI 助手，可以接入飞书、微信等常用聊天工具，并可通过 Skill 扩展能力。
+
+## 1. 安装 OpenClaw
+
+**Linux / macOS：**
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+```
+
+**Windows（PowerShell）：**
+
+```powershell
+iwr -useb https://openclaw.ai/install.ps1 | iex
+```
+
+## 2. 配置默认模型
+
+首次安装会自动进入 setup；已安装用户可执行：
+
+```bash
+openclaw onboard --install-daemon
+```
+
+配置步骤：
+
+1. `I understand this is personal-by-default...` → 选择 **Yes**
+2. `Setup mode` → 推荐 **QuickStart**
+3. `Model/auth provider` → 选择 **Custom / OpenAI Compatible**
+4. 填入 EbeeAI 配置：
+   - **Base URL**：`https://ebeeai.net/v1`
+   - **API Key**：`<你的 EbeeAI API Key>`
+   - **Default model**：填写 EbeeAI 路由中可用的模型 ID（如 `claude-sonnet-4-20250514` 或 `gpt-5.4`）
+5. 消息频道、Skill 等可按需配置，新手可先 **Skip for now**
+
+## 3. 开始使用
+
+**Web UI：**
+
+```bash
+openclaw dashboard
+```
+
+**终端 TUI：**
+
+```bash
+openclaw tui
+```
+
+**终端对话：**
+
+```bash
+openclaw terminal
+```
+
+:::tip
+OpenClaw 通过 OpenAI 兼容 API 接入 EbeeAI，请确保 API Key 绑定的分组支持所选模型。
+:::
