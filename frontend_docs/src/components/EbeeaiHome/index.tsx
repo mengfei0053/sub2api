@@ -1,12 +1,17 @@
 import type {ReactNode, SVGProps} from 'react';
-import {useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import Link from '@docusaurus/Link';
 import clsx from 'clsx';
+import LocaleSwitcher from '@site/src/components/LocaleSwitcher';
 import {
   consoleUrl,
-  homeContent,
+  docUrl,
+  getHomeContent,
+  getStoredLocale,
   loginUrl,
+  setStoredLocale,
   siteName,
+  type HomeLocale,
 } from '@site/src/data/homeContent';
 import styles from './styles.module.css';
 
@@ -83,15 +88,30 @@ const featureIcons = {
 
 export default function EbeeaiHome(): ReactNode {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [locale, setLocale] = useState<HomeLocale>('zh');
   const currentYear = new Date().getFullYear();
-  const c = homeContent;
 
-  const navLinks = [
-    {href: '#features', label: c.nav.features},
-    {href: '#stats', label: c.nav.solutions},
-    {href: '#cta', label: c.nav.pricing},
-    {href: '/docs/intro', label: c.nav.docs, isRoute: true},
-  ];
+  useEffect(() => {
+    setLocale(getStoredLocale());
+  }, []);
+
+  const c = useMemo(() => getHomeContent(locale), [locale]);
+
+  const handleLocaleChange = (next: HomeLocale) => {
+    setLocale(next);
+    setStoredLocale(next);
+  };
+
+  /** Same logic as frontend_self EbeeaiHomePage navLinks */
+  const navLinks = useMemo(() => {
+    const docsHref = docUrl || '#cta';
+    return [
+      {href: '#features', label: c.nav.features},
+      {href: '#stats', label: c.nav.solutions},
+      {href: '#cta', label: c.nav.pricing},
+      {href: docsHref, label: c.nav.docs},
+    ];
+  }, [c]);
 
   const footerLinks = [
     {href: `${consoleUrl}/legal/privacy`, label: c.footer.privacy},
@@ -101,7 +121,7 @@ export default function EbeeaiHome(): ReactNode {
   ];
 
   return (
-    <div className={styles.home}>
+    <div className={clsx('ebeeai-home', styles.home)}>
       <nav className={styles.nav}>
         <div className={styles.navInner}>
           <Link to="/" className={styles.brand}>
@@ -111,7 +131,7 @@ export default function EbeeaiHome(): ReactNode {
 
           <div className={styles.navLinks}>
             {navLinks.map((link) =>
-              link.isRoute ? (
+              link.href.startsWith('/') ? (
                 <Link key={link.href} to={link.href} className={styles.navLink}>
                   {link.label}
                 </Link>
@@ -124,6 +144,7 @@ export default function EbeeaiHome(): ReactNode {
           </div>
 
           <div className={styles.navActions}>
+            <LocaleSwitcher locale={locale} onChange={handleLocaleChange} />
             <a href={loginUrl} className={styles.navCta}>
               {c.nav.getStarted}
             </a>
@@ -145,7 +166,7 @@ export default function EbeeaiHome(): ReactNode {
         {mobileNavOpen && (
           <div className={styles.mobileNav}>
             {navLinks.map((link) =>
-              link.isRoute ? (
+              link.href.startsWith('/') ? (
                 <Link
                   key={link.href}
                   to={link.href}
@@ -289,9 +310,11 @@ export default function EbeeaiHome(): ReactNode {
                     {link.label}
                   </a>
                 ))}
-                <Link to="/docs/intro" className={styles.footerLink}>
-                  {c.footer.docs}
-                </Link>
+                {docUrl ? (
+                  <a href={docUrl} className={styles.footerLink}>
+                    {c.footer.docs}
+                  </a>
+                ) : null}
               </div>
             </footer>
           </div>
