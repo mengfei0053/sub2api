@@ -5,6 +5,9 @@ ARG NGINX_IMAGE=nginx:1.27-alpine
 
 FROM ${NODE_IMAGE} AS docs-builder
 
+ARG SITE_URL=https://ebeeai.net
+ENV SITE_URL=${SITE_URL}
+
 WORKDIR /app/frontend_docs
 
 RUN corepack enable && corepack prepare pnpm@9 --activate

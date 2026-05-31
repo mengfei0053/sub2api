@@ -116,7 +116,7 @@ export const homeContentEn = {
     docs: 'Documentation',
   },
   seo: {
-    title: 'AI API Gateway | Claude GPT Gemini Unified Access | EbeeAI',
+    pageTitle: 'AI API Gateway | Claude GPT Gemini Unified Access',
     description:
       'EbeeAI is an AI API gateway for developers and teams — unified Claude, GPT, Gemini access with routing, API keys, usage, and billing.',
   },
