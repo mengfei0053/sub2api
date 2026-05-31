@@ -1,0 +1,57 @@
+---
+sidebar_position: 5
+---
+
+# 接入 Kilo Code
+
+Kilo Code 是一个 AI 编程助手，支持 CLI 和编辑器扩展。
+
+## 1. 安装 Kilo Code CLI
+
+- 安装 Node.js。
+- 执行：
+
+```bash
+npm install -g @kilocode/cli
+```
+
+验证安装：
+
+```bash
+kilo --version
+```
+
+## 2. 运行 Kilo Code
+
+进入项目目录：
+
+```bash
+cd /path/to/my-project
+kilo
+```
+
+## 3. 连接 EbeeAI
+
+在 Kilo Code 命令栏输入 `/connect`，打开 Connect Provider 面板：
+
+1. 搜索并选择 **OpenAI Compatible** 或 **Custom** 供应商。
+2. 填入 EbeeAI API Key。
+3. Base URL 填写 `https://ebeeai.net/v1`。
+
+若支持直接填写自定义端点，配置如下：
+
+| 字段 | 值 |
+|------|-----|
+| Base URL | `https://ebeeai.net/v1` |
+| API Key | `<你的 EbeeAI API Key>` |
+
+## 4. 选择模型
+
+在模型列表中选择 EbeeAI 路由中可用的模型，例如：
+
+- Claude 系列（Anthropic 分组）
+- GPT / Codex 系列（OpenAI 分组）
+
+:::tip
+具体可用模型取决于你在 EbeeAI 控制台为 API Key 绑定的分组平台。
+:::
