@@ -1,12 +1,4 @@
-/* Hide default Docusaurus chrome on the marketing homepage */
-.homepageWrapper :global(.navbar) {
-  display: none;
-}
-
-.homepageWrapper :global(.main-wrapper) {
-  padding-top: 0;
-}
-
-.homepageWrapper :global(.footer) {
-  display: none;
+.homepageWrapper {
+  max-width: none;
+  padding-top: 0 !important;
 }
