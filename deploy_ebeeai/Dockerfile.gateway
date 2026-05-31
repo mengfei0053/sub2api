@@ -11,6 +11,7 @@ LABEL org.opencontainers.image.source="https://github.com/Wei-Shaw/sub2api"
 RUN rm -f /etc/nginx/conf.d/default.conf
 
 COPY deploy_ebeeai/nginx/gateway.conf /etc/nginx/conf.d/gateway.conf
+COPY deploy_ebeeai/nginx/gateway-ai-stream.conf /etc/nginx/conf.d/gateway-ai-stream.conf
 
 EXPOSE 80
 
