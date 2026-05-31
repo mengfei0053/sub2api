@@ -3,6 +3,7 @@ import {useEffect, useMemo, useState} from 'react';
 import Link from '@docusaurus/Link';
 import clsx from 'clsx';
 import LocaleSwitcher from '@site/src/components/LocaleSwitcher';
+import HomeSeo from '@site/src/components/HomeSeo';
 import {
   consoleUrl,
   docUrl,
@@ -122,6 +123,7 @@ export default function EbeeaiHome(): ReactNode {
 
   return (
     <div className={clsx('ebeeai-home', styles.home)}>
+      <HomeSeo locale={locale} />
       <nav className={styles.nav}>
         <div className={styles.navInner}>
           <Link to="/" className={styles.brand}>
