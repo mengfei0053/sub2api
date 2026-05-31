@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'EbeeAI',
-  tagline: '面向开发者和团队的 AI API 网关与中转平台',
+  tagline: '一个 API Key，统一接入 Claude、GPT、Gemini 等主流 AI 模型',
   favicon: 'img/logo.png',
 
   future: {
