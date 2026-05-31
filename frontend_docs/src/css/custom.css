@@ -153,3 +153,24 @@ body {
 .theme-doc-markdown a:hover {
   text-decoration-color: #000000;
 }
+
+/* Marketing homepage: hide Docusaurus chrome (navbar is sibling of main wrapper) */
+html:has(.ebeeai-home) .navbar,
+html:has(.ebeeai-home) .navbar-sidebar,
+html:has(.ebeeai-home) [role='region'][aria-label='跳到主要内容'],
+html.ebeeai-marketing-home .navbar,
+html.ebeeai-marketing-home .navbar-sidebar,
+html.ebeeai-marketing-home [role='region'][aria-label='跳到主要内容'] {
+  display: none !important;
+}
+
+html:has(.ebeeai-home) .main-wrapper,
+html.ebeeai-marketing-home .main-wrapper {
+  padding-top: 0 !important;
+  max-width: none;
+}
+
+html:has(.ebeeai-home) .footer,
+html.ebeeai-marketing-home .footer {
+  display: none !important;
+}
