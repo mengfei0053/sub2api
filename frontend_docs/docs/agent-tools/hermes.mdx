@@ -1,0 +1,46 @@
+---
+sidebar_position: 10
+---
+
+# 接入 Hermes
+
+Hermes 是 Nous Research 打造的开源自我进化 AI Agent，内置学习闭环：从经验中生成技能，跨会话持续优化。
+
+## 1. 安装 Hermes
+
+**Linux / macOS / WSL2：**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+```
+
+唯一前置依赖是 Git，其余内容由安装脚本自动处理。
+
+更多安装说明请参考 [Hermes 官方文档](https://github.com/NousResearch/hermes-agent)。
+
+## 2. 运行并配置
+
+重新加载 shell 后：
+
+```bash
+hermes setup
+```
+
+配置步骤：
+
+1. 选择 **Quick Setup**
+2. 模型提供商选择 **Custom / OpenAI Compatible**
+3. 输入 EbeeAI API Key
+4. Base URL 填写 `https://ebeeai.net/v1`
+5. 选择 EbeeAI 路由中可用的模型（如 `claude-sonnet-4-20250514`）
+6. 继续完成其余配置选项
+
+## 3. 开始使用
+
+```bash
+hermes
+```
+
+:::tip
+Hermes 使用 OpenAI 兼容 Chat Completions API。若模型不可用，请在 EbeeAI 控制台确认 API Key 分组与模型路由配置。
+:::

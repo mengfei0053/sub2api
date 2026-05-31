@@ -1,0 +1,68 @@
+---
+sidebar_position: 7
+---
+
+# 接入 OpenCode
+
+OpenCode 是一个开源 AI 编程助手，提供终端、网页等运行形式。
+
+## 从现有安装迁移到 EbeeAI
+
+1. 执行 `opencode upgrade`，将 OpenCode 升级至最新版本（建议 >= v1.14.24）。
+2. 执行 `opencode` 启动 OpenCode。
+3. 在输入框输入 `/connect`，选择自定义 OpenAI 或 Anthropic 供应商。
+4. 填入 EbeeAI API Key 与 Base URL。
+
+## 从零安装 OpenCode
+
+### 1. 安装 OpenCode
+
+参考 [OpenCode 官方文档](https://opencode.ai) 安装，并确保版本 >= v1.14.24。
+
+### 2. 手动配置（推荐）
+
+编辑 OpenCode 配置文件（通常为 `~/.config/opencode/opencode.json` 或项目内 `.opencode/opencode.json`）。
+
+**Anthropic 分组（Claude）：**
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "anthropic": {
+      "options": {
+        "baseURL": "https://ebeeai.net/v1",
+        "apiKey": "<你的 EbeeAI API Key>"
+      }
+    }
+  }
+}
+```
+
+**OpenAI 分组（Codex / GPT）：**
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "openai": {
+      "options": {
+        "baseURL": "https://ebeeai.net/v1",
+        "apiKey": "<你的 EbeeAI API Key>"
+      }
+    }
+  }
+}
+```
+
+### 3. 运行与选择模型
+
+```bash
+opencode
+```
+
+在 OpenCode 中选择对应 provider 与 EbeeAI 路由中可用的模型。
+
+:::tip 控制台一键复制
+在 EbeeAI 控制台 **API Key → 使用 Key** 弹窗中，可直接复制 OpenCode 配置片段。
+:::
