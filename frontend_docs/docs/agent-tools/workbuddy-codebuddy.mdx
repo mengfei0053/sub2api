@@ -1,0 +1,78 @@
+---
+sidebar_position: 6
+---
+
+# 接入 WorkBuddy / CodeBuddy
+
+WorkBuddy / CodeBuddy 是 AI Agent 与编程助手工具，支持通过本地模型配置文件添加自定义模型，使用 OpenAI 兼容的 Chat Completions API 接入 EbeeAI。
+
+## 前置条件
+
+- 安装并登录 WorkBuddy / CodeBuddy。
+- 至少打开一次项目目录，让应用创建本地配置目录。
+- 在 [EbeeAI 控制台](https://ebeeai.net) 获取 API Key。
+
+## 1. 创建模型配置
+
+在项目目录下创建 `.codebuddy/models.json`（或应用指定的配置路径）：
+
+```json
+{
+  "models": [
+    {
+      "id": "claude-sonnet-4-20250514",
+      "name": "Claude Sonnet 4",
+      "vendor": "Anthropic",
+      "url": "https://ebeeai.net/v1/chat/completions",
+      "apiKey": "${EBEEAI_API_KEY}",
+      "maxInputTokens": 200000,
+      "maxOutputTokens": 8192,
+      "supportsToolCall": true,
+      "supportsImages": false
+    },
+    {
+      "id": "gpt-5.4",
+      "name": "GPT-5.4",
+      "vendor": "OpenAI",
+      "url": "https://ebeeai.net/v1/chat/completions",
+      "apiKey": "${EBEEAI_API_KEY}",
+      "maxInputTokens": 400000,
+      "maxOutputTokens": 128000,
+      "supportsToolCall": true,
+      "supportsImages": false
+    }
+  ],
+  "availableModels": [
+    "claude-sonnet-4-20250514",
+    "gpt-5.4"
+  ]
+}
+```
+
+## 2. 设置环境变量
+
+**macOS / Linux：**
+
+```bash
+export EBEEAI_API_KEY=<你的 EbeeAI API Key>
+```
+
+**Windows PowerShell：**
+
+```powershell
+$env:EBEEAI_API_KEY="<你的 EbeeAI API Key>"
+```
+
+## 3. 重启应用
+
+完全重启 WorkBuddy / CodeBuddy，在模型选择器中选择已配置的模型。
+
+## 故障排查
+
+| 现象 | 处理方式 |
+|------|----------|
+| `Authentication Fails` / 401 | 检查 `apiKey` 是否为真实 EbeeAI API Key，勿将 URL 填入 Key 字段 |
+| 404 未找到模型 | 确认模型 `id` 与 EbeeAI 路由配置一致 |
+| 读取配置失败 | 检查 `models.json` 是否为合法 JSON，保存为 UTF-8 无 BOM |
+| 选择器不显示模型 | 重启应用，确认文件位于 `.codebuddy/models.json` |
+| 显示 `${EBEEAI_API_KEY}` 原文 | 从已设置环境变量的终端重启；或在配置中直接填入真实 Key |
