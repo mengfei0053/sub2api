@@ -95,13 +95,8 @@ const config: Config = {
           label: '文档',
         },
         {
-          href: 'https://ebeeai.net',
+          href: 'https://ebeeai.net/admin/dashboard',
           label: '控制台',
-          position: 'right',
-        },
-        {
-          href: 'https://github.com/mengfei0053/sub2api',
-          label: 'GitHub',
           position: 'right',
         },
       ],
@@ -127,16 +122,7 @@ const config: Config = {
           items: [
             {
               label: 'EbeeAI 控制台',
-              href: 'https://ebeeai.net',
-            },
-          ],
-        },
-        {
-          title: '更多',
-          items: [
-            {
-              label: 'GitHub',
-              href: 'https://github.com/mengfei0053/sub2api',
+              href: 'https://ebeeai.net/admin/dashboard',
             },
           ],
         },

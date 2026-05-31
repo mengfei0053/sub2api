@@ -128,7 +128,7 @@ export const homeContent = {
 } as const;
 
 export const consoleUrl = 'https://ebeeai.net';
-export const loginUrl = 'https://ebeeai.net/login';
+export const loginUrl = 'https://ebeeai.net/admin/dashboard';
 
 export type HomeLocale = 'zh' | 'en';
 
