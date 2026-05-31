@@ -1,6 +1,11 @@
 /** Content aligned with frontend_self/src/i18n/locales/zh.ts home.ebeeai */
 
+import {homeContentEn} from './homeContent.en';
+
 export const siteName = 'EbeeAI';
+
+/** Nav "文档" link on docs site homepage. */
+export const docUrl = '/docs/intro';
 
 export const homeContent = {
   nav: {
@@ -124,3 +129,25 @@ export const homeContent = {
 
 export const consoleUrl = 'https://ebeeai.net';
 export const loginUrl = 'https://ebeeai.net/login';
+
+export type HomeLocale = 'zh' | 'en';
+
+const LOCALE_STORAGE_KEY = 'ebeeai-docs-home-locale';
+
+export function getStoredLocale(): HomeLocale {
+  if (typeof window === 'undefined') {
+    return 'zh';
+  }
+  const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+  return stored === 'en' ? 'en' : 'zh';
+}
+
+export function setStoredLocale(locale: HomeLocale): void {
+  window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+}
+
+export function getHomeContent(locale: HomeLocale) {
+  return locale === 'en' ? homeContentEn : homeContent;
+}
+
+export type HomeContent = typeof homeContent;
