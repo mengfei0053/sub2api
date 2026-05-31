@@ -1,6 +1,9 @@
 /** SEO constants aligned with frontend_self/src/config/seo.ts */
 
-export const SITE_ORIGIN = (process.env.SITE_URL ?? 'https://ebeeai.net').replace(/\/$/, '');
+const runtimeSiteUrl =
+  typeof process !== 'undefined' && process.env?.SITE_URL ? process.env.SITE_URL : 'https://ebeeai.net';
+
+export const SITE_ORIGIN = runtimeSiteUrl.replace(/\/$/, '');
 
 export const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/img/logo.png`;
 

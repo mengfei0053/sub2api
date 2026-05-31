@@ -6,6 +6,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '接入 Agent 工具',
+      collapsed: false,
       link: {
         type: 'doc',
         id: 'agent-tools/index',
