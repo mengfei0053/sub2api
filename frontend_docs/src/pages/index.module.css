@@ -1,0 +1,39 @@
+.heroBanner {
+  padding: 4rem 0 5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroLogo {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2.5rem 1rem 3rem;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+
+  .buttons :global(.button) {
+    margin-left: 0 !important;
+    width: 100%;
+    max-width: 280px;
+  }
+}
