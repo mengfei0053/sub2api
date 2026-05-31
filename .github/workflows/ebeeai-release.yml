@@ -109,10 +109,22 @@ jobs:
           version="${{ needs.resolve-version.outputs.release_version }}"
           upstream="${{ needs.resolve-version.outputs.upstream_version }}"
 
-          tags="${image}:sha-${commit}"
-          tags="${tags}"$'\n'"${image}:${version}"
-          tags="${tags}"$'\n'"${image}:${upstream}"
-          tags="${tags}"$'\n'"${image}:latest"
+          tags="${image}-backend:sha-${commit}"
+          tags="${tags}"$'\n'"${image}-backend:${version}"
+          tags="${tags}"$'\n'"${image}-backend:${upstream}"
+          tags="${tags}"$'\n'"${image}-backend:latest"
+          tags="${tags}"$'\n'"${image}-app:sha-${commit}"
+          tags="${tags}"$'\n'"${image}-app:${version}"
+          tags="${tags}"$'\n'"${image}-app:${upstream}"
+          tags="${tags}"$'\n'"${image}-app:latest"
+          tags="${tags}"$'\n'"${image}-docs:sha-${commit}"
+          tags="${tags}"$'\n'"${image}-docs:${version}"
+          tags="${tags}"$'\n'"${image}-docs:${upstream}"
+          tags="${tags}"$'\n'"${image}-docs:latest"
+          tags="${tags}"$'\n'"${image}-gateway:sha-${commit}"
+          tags="${tags}"$'\n'"${image}-gateway:${version}"
+          tags="${tags}"$'\n'"${image}-gateway:${upstream}"
+          tags="${tags}"$'\n'"${image}-gateway:latest"
 
           {
             echo "image=${image}"
@@ -149,26 +161,95 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push linux/amd64 image
+      - name: Build and push backend image
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: deploy_ebeeai/Dockerfile
+          file: deploy_ebeeai/Dockerfile.backend
           platforms: linux/amd64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.meta.outputs.image }}-backend:sha-${{ steps.meta.outputs.commit }}
+            ${{ steps.meta.outputs.image }}-backend:${{ steps.meta.outputs.version }}
+            ${{ steps.meta.outputs.image }}-backend:${{ steps.meta.outputs.upstream }}
+            ${{ steps.meta.outputs.image }}-backend:latest
           build-args: |
             VERSION=${{ steps.meta.outputs.upstream }}
             COMMIT=${{ steps.meta.outputs.commit }}
             DATE=${{ steps.meta.outputs.build_date }}
-            FRONTEND_DIR=frontend_self
             GOPROXY=https://proxy.golang.org,direct
             GOSUMDB=sum.golang.org
-          cache-from: type=gha,scope=ebeeai-release-amd64
-          cache-to: type=gha,scope=ebeeai-release-amd64,mode=max
+          cache-from: type=gha,scope=ebeeai-release-backend-amd64
+          cache-to: type=gha,scope=ebeeai-release-backend-amd64,mode=max
           labels: |
-            org.opencontainers.image.title=sub2api-ebeeai
-            org.opencontainers.image.description=Sub2API runtime image for the EbeeAI 1Panel deployment
+            org.opencontainers.image.title=sub2api-ebeeai-backend
+            org.opencontainers.image.description=Sub2API backend for the EbeeAI split deployment
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ steps.meta.outputs.version }}
+            org.opencontainers.image.created=${{ steps.meta.outputs.build_date }}
+
+      - name: Build and push app image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deploy_ebeeai/Dockerfile.frontend_self
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}-app:sha-${{ steps.meta.outputs.commit }}
+            ${{ steps.meta.outputs.image }}-app:${{ steps.meta.outputs.version }}
+            ${{ steps.meta.outputs.image }}-app:${{ steps.meta.outputs.upstream }}
+            ${{ steps.meta.outputs.image }}-app:latest
+          cache-from: type=gha,scope=ebeeai-release-app-amd64
+          cache-to: type=gha,scope=ebeeai-release-app-amd64,mode=max
+          labels: |
+            org.opencontainers.image.title=sub2api-ebeeai-app
+            org.opencontainers.image.description=EbeeAI app SPA for the split deployment
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ steps.meta.outputs.version }}
+            org.opencontainers.image.created=${{ steps.meta.outputs.build_date }}
+
+      - name: Build and push docs image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deploy_ebeeai/Dockerfile.frontend_docs
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}-docs:sha-${{ steps.meta.outputs.commit }}
+            ${{ steps.meta.outputs.image }}-docs:${{ steps.meta.outputs.version }}
+            ${{ steps.meta.outputs.image }}-docs:${{ steps.meta.outputs.upstream }}
+            ${{ steps.meta.outputs.image }}-docs:latest
+          cache-from: type=gha,scope=ebeeai-release-docs-amd64
+          cache-to: type=gha,scope=ebeeai-release-docs-amd64,mode=max
+          labels: |
+            org.opencontainers.image.title=sub2api-ebeeai-docs
+            org.opencontainers.image.description=EbeeAI marketing site and docs for the split deployment
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ steps.meta.outputs.version }}
+            org.opencontainers.image.created=${{ steps.meta.outputs.build_date }}
+
+      - name: Build and push gateway image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deploy_ebeeai/Dockerfile.gateway
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}-gateway:sha-${{ steps.meta.outputs.commit }}
+            ${{ steps.meta.outputs.image }}-gateway:${{ steps.meta.outputs.version }}
+            ${{ steps.meta.outputs.image }}-gateway:${{ steps.meta.outputs.upstream }}
+            ${{ steps.meta.outputs.image }}-gateway:latest
+          cache-from: type=gha,scope=ebeeai-release-gateway-amd64
+          cache-to: type=gha,scope=ebeeai-release-gateway-amd64,mode=max
+          labels: |
+            org.opencontainers.image.title=sub2api-ebeeai-gateway
+            org.opencontainers.image.description=Path router for the EbeeAI split deployment
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ steps.meta.outputs.version }}
@@ -189,7 +270,7 @@ jobs:
 
           BODY_FILE="$(mktemp)"
           {
-            echo "> EbeeAI Sub2API release built from \`frontend_self/\` and \`deploy_ebeeai/\`."
+            echo "> EbeeAI Sub2API release built from \`frontend_self/\`, \`frontend_docs/\`, and \`deploy_ebeeai/\`."
             echo
             echo "- Upstream Sub2API version: \`${UPSTREAM_VERSION}\`"
             echo "- EbeeAI service version: \`${EBEEAI_VERSION}\`"
@@ -198,15 +279,18 @@ jobs:
               echo "${TAG_MESSAGE}"
               echo
             fi
-            echo "## Docker"
+            echo "## Docker (split stack)"
             echo
             echo '```bash'
-            echo "docker pull ${IMAGE}:${RELEASE_VERSION}"
+            echo "docker pull ${IMAGE}-backend:${RELEASE_VERSION}"
+            echo "docker pull ${IMAGE}-app:${RELEASE_VERSION}"
+            echo "docker pull ${IMAGE}-docs:${RELEASE_VERSION}"
+            echo "docker pull ${IMAGE}-gateway:${RELEASE_VERSION}"
             echo '```'
             echo
             echo "## 1Panel"
             echo
-            echo "Set \`SUB2API_VERSION=${RELEASE_VERSION}\` in the EbeeAI compose environment, then pull and recreate the stack."
+            echo "Set \`SUB2API_VERSION=${RELEASE_VERSION}\` in the EbeeAI compose environment, then pull and recreate the stack (gateway + backend + app + docs)."
           } > "${BODY_FILE}"
 
           gh release view "${TAG_NAME}" >/dev/null 2>&1 && \
