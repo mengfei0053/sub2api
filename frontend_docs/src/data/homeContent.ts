@@ -121,7 +121,7 @@ export const homeContent = {
     docs: '文档',
   },
   seo: {
-    title: 'AI API 网关_Claude GPT Gemini API 统一接入平台 | EbeeAI',
+    pageTitle: 'AI API 网关 | Claude GPT Gemini 统一接入平台',
     description:
       'EbeeAI 是面向开发者和团队的 AI中转站与 AI API 网关，支持统一接入 Claude、GPT、Gemini 等主流模型，提供多模型中转、API Key 管理、用量统计、按量计费和稳定路由能力。',
   },
