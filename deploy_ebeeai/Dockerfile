@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 
-# EbeeAI production image.
-# This Dockerfile is intentionally kept outside the repository's original
-# Dockerfile/compose set so the current upstream deployment assets stay untouched.
+# EbeeAI production image (legacy monolith: backend embeds frontend_self).
+# For current production, use the split stack in docker-compose.yml:
+#   Dockerfile.backend, Dockerfile.frontend_self, Dockerfile.frontend_docs, Dockerfile.gateway
 
 ARG NODE_IMAGE=node:24-alpine
 ARG GOLANG_IMAGE=golang:1.26.3-alpine
