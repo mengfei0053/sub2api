@@ -1,0 +1,111 @@
+---
+sidebar_position: 7
+---
+
+# 接入 Codex CLI
+
+Codex CLI 是 OpenAI 官方的本地 AI 编程 Agent。通过 EbeeAI 的 OpenAI 兼容端点，你可以让 Codex 使用 EbeeAI 路由中的 GPT / Codex 系列模型，并继续使用 Codex 的终端 Agent、审批与沙盒能力。
+
+## 1. 安装 Codex CLI
+
+**npm：**
+
+```bash
+npm install -g @openai/codex
+```
+
+**Homebrew：**
+
+```bash
+brew install --cask codex
+```
+
+验证安装：
+
+```bash
+codex --version
+```
+
+## 2. 获取 EbeeAI API Key
+
+1. 打开 [EbeeAI 控制台](https://ebeeai.net)。
+2. 创建或选择一个 API Key。
+3. 确认该 Key 已绑定可用的 OpenAI / Codex 模型分组。
+4. 复制 Base URL，通常为：`https://ebeeai.net/v1`。
+
+## 3. 配置环境变量
+
+Codex 会从配置中的 `env_key` 指定环境变量读取 API Key。下文使用 `EBEEAI_API_KEY`，你也可以改成自己的变量名。
+
+**macOS / Linux：**
+
+```bash
+export EBEEAI_API_KEY="<你的 EbeeAI API Key>"
+```
+
+**Windows PowerShell：**
+
+```powershell
+$env:EBEEAI_API_KEY="<你的 EbeeAI API Key>"
+```
+
+## 4. 配置 Codex Provider
+
+编辑用户级配置文件：
+
+```bash
+mkdir -p ~/.codex
+nano ~/.codex/config.toml
+```
+
+写入以下配置：
+
+```toml
+model = "gpt-5.1-codex"
+model_provider = "ebeeai"
+
+[model_providers.ebeeai]
+name = "EbeeAI"
+base_url = "https://ebeeai.net/v1"
+wire_api = "responses"
+env_key = "EBEEAI_API_KEY"
+env_key_instructions = "Set EBEEAI_API_KEY to your EbeeAI API Key"
+```
+
+:::tip 模型名称
+将 `model` 改成 EbeeAI 路由中实际可用的模型 ID 即可，例如管理员配置的 GPT / Codex 系列模型。Codex 当前推荐走 Responses API，因此这里使用 `wire_api = "responses"`。
+:::
+
+如果只想在某个项目内使用 EbeeAI，也可以在项目目录创建 `.codex/config.toml`，写入相同配置。
+
+## 5. 启动 Codex
+
+进入项目目录并启动：
+
+```bash
+cd /path/to/my-project
+codex
+```
+
+Codex 启动后会使用 `model_provider = "ebeeai"` 指向 EbeeAI，并通过 `https://ebeeai.net/v1/responses` 发起请求。
+
+## 常见问题
+
+**401 / Authentication failed**
+
+检查 `EBEEAI_API_KEY` 是否已设置，且值为 EbeeAI 控制台创建的有效 API Key。
+
+**404 / 模型不存在**
+
+确认 `model` 填写的是 EbeeAI 路由中可用的模型 ID，并且 API Key 已绑定对应分组。
+
+**请求格式错误**
+
+确认配置中使用：
+
+```toml
+wire_api = "responses"
+base_url = "https://ebeeai.net/v1"
+```
+
+不要把 Base URL 写成 `https://ebeeai.net/v1/responses`，Codex 会自动拼接具体接口路径。
