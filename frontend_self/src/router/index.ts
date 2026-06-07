@@ -12,6 +12,7 @@ import { useRoutePrefetch } from '@/composables/useRoutePrefetch'
 import { getSetupStatus } from '@/api/setup'
 import { resolveCompletedSetupRedirectPath } from './setupRedirect'
 import { applyRouteSeo } from './seo'
+import { DEFAULT_SITE_NAME } from '@/config/seo'
 
 /**
  * Route definitions with lazy loading
@@ -746,7 +747,7 @@ router.beforeEach(async (to, _from, next) => {
     const menuItem = publicItems.find((item) => item.id === id)
       ?? (authStore.isAdmin ? adminSettingsStore.customMenuItems.find((item) => item.id === id) : undefined)
     if (menuItem?.label) {
-      const siteName = appStore.siteName || 'Sub2API'
+      const siteName = appStore.siteName || DEFAULT_SITE_NAME
       customTitle = `${menuItem.label} - ${siteName}`
     }
   }
