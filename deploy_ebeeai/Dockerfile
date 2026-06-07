@@ -5,7 +5,7 @@
 #   Dockerfile.backend, Dockerfile.frontend_self, Dockerfile.frontend_docs, Dockerfile.gateway
 
 ARG NODE_IMAGE=node:24-alpine
-ARG GOLANG_IMAGE=golang:1.26.3-alpine
+ARG GOLANG_IMAGE=golang:1.26.4-alpine
 ARG ALPINE_IMAGE=alpine:3.21
 ARG POSTGRES_IMAGE=postgres:18.3-alpine
 ARG GOPROXY=https://goproxy.cn,direct
