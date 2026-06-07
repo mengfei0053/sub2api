@@ -15,6 +15,7 @@ const sidebars: SidebarsConfig = {
         'agent-tools/claude-code',
         'agent-tools/github-copilot',
         'agent-tools/github-copilot-cli',
+        'agent-tools/codex',
         'agent-tools/kilo-code',
         'agent-tools/workbuddy-codebuddy',
         'agent-tools/opencode',
