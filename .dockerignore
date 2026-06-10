@@ -8,7 +8,10 @@
 .gitattributes
 
 # Documentation (repo root only; keep frontend_docs/docs for split deploy builds)
-/docs/
+# Keep legal markdown used by frontend_self production builds.
+/docs/*
+!/docs/legal/
+!/docs/legal/*.md
 
 # IDE
 .idea/
