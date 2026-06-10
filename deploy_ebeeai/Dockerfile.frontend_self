@@ -13,6 +13,7 @@ COPY frontend_self/package.json frontend_self/pnpm-lock.yaml frontend_self/pnpm-
 RUN pnpm install --frozen-lockfile
 
 COPY frontend_self/ ./
+COPY docs/legal /app/docs/legal
 
 ENV VITE_OUT_DIR=dist
 RUN pnpm run build
