@@ -257,7 +257,7 @@ jobs:
 
       - name: Create GitHub Release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           TAG_NAME: ${{ needs.resolve-version.outputs.tag_name }}
           RELEASE_VERSION: ${{ needs.resolve-version.outputs.release_version }}
           UPSTREAM_VERSION: ${{ needs.resolve-version.outputs.upstream_version }}
