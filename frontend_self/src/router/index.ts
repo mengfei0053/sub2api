@@ -13,7 +13,7 @@ import { useRoutePrefetch } from '@/composables/useRoutePrefetch'
 import { getSetupStatus } from '@/api/setup'
 import { resolveCompletedSetupRedirectPath } from './setupRedirect'
 import { applyRouteSeo } from './seo'
-import { DEFAULT_SITE_NAME } from '@/config/seo'
+import { resolveRouteDocumentTitle } from './title'
 
 /**
  * Route definitions with lazy loading
@@ -740,23 +740,17 @@ router.beforeEach(async (to, _from, next) => {
 
   // Set page title and SEO meta tags
   const appStore = useAppStore()
-  let customTitle: string | undefined
-  if (to.name === 'CustomPage') {
-    const id = to.params.id as string
-    const publicItems = appStore.cachedPublicSettings?.custom_menu_items ?? []
-    const adminSettingsStore = useAdminSettingsStore()
-    const menuItem = publicItems.find((item) => item.id === id)
-      ?? (authStore.isAdmin ? adminSettingsStore.customMenuItems.find((item) => item.id === id) : undefined)
-    if (menuItem?.label) {
-      const siteName = appStore.siteName || DEFAULT_SITE_NAME
-      customTitle = `${menuItem.label} - ${siteName}`
-    }
-  }
+  const adminSettingsStore = useAdminSettingsStore()
+  const customMenuItems = [
+    ...(appStore.cachedPublicSettings?.custom_menu_items ?? []),
+    ...(authStore.isAdmin ? adminSettingsStore.customMenuItems : []),
+  ]
+  const customTitle = resolveRouteDocumentTitle(to, appStore.siteName, customMenuItems)
 
   applyRouteSeo({
     route: to,
     siteName: appStore.siteName,
-    customTitle
+    customTitle,
   })
 
   // Check if route requires authentication
