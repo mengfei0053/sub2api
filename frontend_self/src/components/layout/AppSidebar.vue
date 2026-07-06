@@ -9,18 +9,26 @@
     <!-- Logo/Brand -->
     <div class="sidebar-header" :class="{ 'sidebar-header-collapsed': sidebarCollapsed }">
       <!-- Custom Logo or Default Logo -->
-      <div class="sidebar-logo flex shrink-0 items-center">
+      <router-link
+        :to="homePath"
+        class="sidebar-logo flex shrink-0 items-center transition-opacity hover:opacity-80"
+        @click="handleMenuItemClick(homePath)"
+      >
         <img
           v-if="settingsLoaded"
           :src="siteLogo || '/logo.png'"
           alt="Logo"
           class="h-9 w-auto object-contain"
         />
-      </div>
+      </router-link>
       <div class="sidebar-brand" :class="{ 'sidebar-brand-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
-        <span class="sidebar-brand-title text-lg font-bold text-enterprise-on-surface">
+        <router-link
+          :to="homePath"
+          class="sidebar-brand-title text-lg font-bold text-enterprise-on-surface transition-opacity hover:opacity-80"
+          @click="handleMenuItemClick(homePath)"
+        >
           {{ siteName }}
-        </span>
+        </router-link>
         <!-- Version Badge -->
         <VersionBadge :version="siteVersion" />
       </div>
@@ -227,6 +235,8 @@ const adminSettingsStore = useAdminSettingsStore()
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed)
 const mobileOpen = computed(() => appStore.mobileOpen)
 const isAdmin = computed(() => authStore.isAdmin)
+
+const homePath = computed(() => (isAdmin.value ? '/admin/dashboard' : '/dashboard'))
 
 // Track which parent nav groups are expanded
 const expandedGroups = ref<Set<string>>(new Set())
