@@ -104,6 +104,7 @@ describe('OpenAIQuotaResetCell', () => {
     })
 
     const wrapper = mount(OpenAIQuotaResetCell, {
+      attachTo: document.body,
       props: {
         account: makeAccount({ id: 42 })
       }
@@ -121,6 +122,12 @@ describe('OpenAIQuotaResetCell', () => {
     expect(wrapper.findAll('button')[1].attributes('disabled')).toBeUndefined()
 
     await wrapper.findAll('button')[1].trigger('click')
+    await flushPromises()
+
+    const confirmButtons = Array.from(document.body.querySelectorAll('button')).filter((button) =>
+      button.textContent?.includes('admin.accounts.openaiQuotaReset.reset')
+    )
+    confirmButtons[confirmButtons.length - 1].click()
     await flushPromises()
 
     expect(resetOpenAIQuota).toHaveBeenCalledWith(42)
