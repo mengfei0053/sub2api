@@ -1,4 +1,7 @@
 interface:
   display_name: "Sub2API Rebase Check"
-  short_description: "Check Sub2API after upstream rebases."
-  default_prompt: "After rebasing Sub2API onto an upstream branch or tag, verify frontend_self preserved EbeeAI customizations while including upstream changes."
+  short_description: "Strict frontend_self audit after rebases."
+  default_prompt: >-
+    After rebasing Sub2API onto an upstream branch or tag, run the strict
+    frontend_self audit so upstream features are complete, EbeeAI theme markers
+    remain, locales and lockfile pass, then report the gate table.
