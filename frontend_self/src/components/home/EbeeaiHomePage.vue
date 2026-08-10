@@ -309,6 +309,7 @@ import { useI18n } from 'vue-i18n'
 import { useAuthStore, useAppStore } from '@/stores'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import Icon from '@/components/icons/Icon.vue'
+import { sanitizeUrl } from '@/utils/url'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -319,8 +320,8 @@ const mobileNavOpen = ref(false)
 const siteName = computed(
   () => appStore.cachedPublicSettings?.site_name || appStore.siteName || 'EBeeAI'
 )
-const siteLogo = computed(
-  () => appStore.cachedPublicSettings?.site_logo || appStore.siteLogo || ''
+const siteLogo = computed(() =>
+  sanitizeUrl(appStore.cachedPublicSettings?.site_logo || appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true })
 )
 const siteSubtitle = computed(() => {
   const subtitle = appStore.cachedPublicSettings?.site_subtitle?.trim()
@@ -328,7 +329,7 @@ const siteSubtitle = computed(() => {
     ? subtitle
     : t('home.ebeeai.hero.subtitle')
 })
-const docUrl = computed(() => appStore.cachedPublicSettings?.doc_url || appStore.docUrl || '')
+const docUrl = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.doc_url || appStore.docUrl || ''))
 
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const isAdmin = computed(() => authStore.isAdmin)
