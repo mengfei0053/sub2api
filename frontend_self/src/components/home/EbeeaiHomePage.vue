@@ -31,6 +31,16 @@
         </div>
 
         <div class="flex items-center gap-2 md:gap-3">
+          <!-- Model Plaza Link -->
+          <router-link
+            v-if="showModelPlazaEntry"
+            to="/model-plaza"
+            class="inline-flex items-center gap-1.5 rounded px-2.5 py-2 text-sm font-medium text-enterprise-secondary transition-colors hover:text-enterprise-primary"
+            :title="t('nav.modelPlaza')"
+          >
+            <Icon name="grid" size="md" />
+            <span class="hidden sm:inline">{{ t('nav.modelPlaza') }}</span>
+          </router-link>
           <LocaleSwitcher />
           <router-link
             :to="primaryCtaPath"
@@ -330,8 +340,13 @@ const siteSubtitle = computed(() => {
     : t('home.ebeeai.hero.subtitle')
 })
 const docUrl = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.doc_url || appStore.docUrl || ''))
-
 const isAuthenticated = computed(() => authStore.isAuthenticated)
+const showModelPlazaEntry = computed(() => {
+  const settings = appStore.cachedPublicSettings
+  const enabled = settings?.model_plaza_enabled === true
+  const requiresAuth = settings?.model_plaza_require_auth === true
+  return enabled && (isAuthenticated.value || !requiresAuth)
+})
 const isAdmin = computed(() => authStore.isAdmin)
 const primaryCtaPath = computed(() =>
   isAuthenticated.value ? (isAdmin.value ? '/admin/dashboard' : '/dashboard') : '/login'
