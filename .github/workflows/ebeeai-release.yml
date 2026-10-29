@@ -138,6 +138,9 @@ jobs:
           echo "${TAG_MESSAGE}" >> "${GITHUB_OUTPUT}"
           echo "EOF" >> "${GITHUB_OUTPUT}"
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -148,12 +151,12 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push linux/amd64 image
+      - name: Build and push multi-arch image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: deploy_ebeeai/Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
@@ -163,8 +166,8 @@ jobs:
             FRONTEND_DIR=frontend_self
             GOPROXY=https://proxy.golang.org,direct
             GOSUMDB=sum.golang.org
-          cache-from: type=gha,scope=ebeeai-release-amd64
-          cache-to: type=gha,scope=ebeeai-release-amd64,mode=max
+          cache-from: type=gha,scope=ebeeai-release
+          cache-to: type=gha,scope=ebeeai-release,mode=max
           labels: |
             org.opencontainers.image.title=sub2api-ebeeai
             org.opencontainers.image.description=Sub2API runtime image for the EbeeAI 1Panel deployment
