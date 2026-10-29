@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      document.documentElement.classList.remove('dark')
+      try {
+        localStorage.setItem('theme', 'light')
+      } catch (e) {}
+      document.documentElement.style.colorScheme = 'light'
+    </script>
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="baidu-site-verification" content="codeva-cF058Owqm3" />
+    <meta
+      name="description"
+      content="EbeeAI 是面向开发者和团队的 AI中转站与 AI API 网关，支持统一接入 Claude、GPT、Gemini 等主流模型，提供多模型中转、API Key 管理、用量统计、按量计费和稳定路由能力。"
+    />
+    <meta name="robots" content="index,follow" />
+    <link rel="canonical" href="https://ebeeai.net/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="EbeeAI" />
+    <meta property="og:title" content="AI API 网关_Claude GPT Gemini API 统一接入平台 | EbeeAI" />
+    <meta
+      property="og:description"
+      content="EbeeAI 是面向开发者和团队的 AI中转站与 AI API 网关，支持统一接入 Claude、GPT、Gemini 等主流模型，提供多模型中转、API Key 管理、用量统计、按量计费和稳定路由能力。"
+    />
+    <meta property="og:url" content="https://ebeeai.net/" />
+    <meta property="og:image" content="https://ebeeai.net/logo.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AI API 网关_Claude GPT Gemini API 统一接入平台 | EbeeAI" />
+    <meta
+      name="twitter:description"
+      content="EbeeAI 是面向开发者和团队的 AI中转站与 AI API 网关，支持统一接入 Claude、GPT、Gemini 等主流模型，提供多模型中转、API Key 管理、用量统计、按量计费和稳定路由能力。"
+    />
+    <meta name="twitter:image" content="https://ebeeai.net/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>AI API 网关_Claude GPT Gemini API 统一接入平台 | EbeeAI</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "EbeeAI",
+        "url": "https://ebeeai.net",
+        "logo": "https://ebeeai.net/logo.png",
+        "description": "EbeeAI 是面向开发者和团队的 AI中转站与 AI API 网关，支持统一接入 Claude、GPT、Gemini 等主流模型，提供多模型中转、API Key 管理、用量统计、按量计费和稳定路由能力。"
+      }
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

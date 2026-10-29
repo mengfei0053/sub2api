@@ -1,0 +1,8 @@
+interface:
+  display_name: "Rebase Upstream to New Release"
+  short_description: "Upgrade EbeeAI to a new upstream tag."
+  default_prompt: >-
+    Upgrade EbeeAI to a newer upstream Sub2API version: sync main, cut release
+    branch, rebase onto the new tag, 3-way merge frontend_self, pass strict
+    audit (features+theme+lockfile), typecheck/tests, publish tag, wait for
+    EbeeAI Release GitHub Action success, then output 更新结果 + 检查结果.

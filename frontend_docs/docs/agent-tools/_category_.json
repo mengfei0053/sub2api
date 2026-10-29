@@ -1,0 +1,10 @@
+{
+  "label": "接入 Agent 工具",
+  "position": 3,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "title": "接入 Agent 工具",
+    "description": "将 EbeeAI 接入 Claude Code、GitHub Copilot、OpenCode 等主流 AI 编程 Agent 与 CLI 工具。"
+  }
+}

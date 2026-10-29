@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /$
+Allow: /login
+Allow: /register
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /keys
+Disallow: /usage
+Disallow: /profile
+Disallow: /redeem
+Disallow: /affiliate
+Disallow: /subscriptions
+Disallow: /orders
+Disallow: /payment
+Disallow: /setup
+Disallow: /auth/
+Disallow: /key-usage
+Disallow: /email-verify
+
+Sitemap: https://ebeeai.net/sitemap.xml

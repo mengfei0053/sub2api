@@ -35,6 +35,9 @@ backend/.gocache/
 node_modules/
 frontend/node_modules/
 frontend/dist/
+frontend_self/node_modules/
+frontend_self/dist/
+frontend_self/coverage/
 *.local
 *.tsbuildinfo
 vite.config.d.ts
@@ -82,6 +85,11 @@ tmp/
 temp/
 *.tmp
 *.temp
+backend/build-errors.log
+
+# 本地数据库备份（含生产敏感数据，绝不提交）
+db_backup/
+*.dump
 *.log
 *.bak
 .cache/
@@ -124,10 +132,13 @@ CLAUDE.md
 scripts
 !backend/scripts/
 !backend/scripts/resolve-version.sh
+!.agents/
+!.agents/**/
+!.agents/**/scripts/
+!.agents/**/scripts/**
 .code-review-state
 #openspec/
 code-reviews/
-AGENTS.md
 backend/cmd/server/server
 deploy/docker-compose.override.yml
 .gocache/
@@ -161,3 +172,4 @@ issues/
 .vite/
 # 本地闭源插件开发目录及构建产物不进入 Sub2API 仓库
 /plugins/
+reports/

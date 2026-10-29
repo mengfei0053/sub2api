@@ -130,7 +130,7 @@ func SecurityHeaders(cfg config.CSPConfig, getFrameSrcOrigins func() []string) g
 		c.Header("X-Content-Type-Options", "nosniff")
 		c.Header("X-Frame-Options", "DENY")
 		c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
-		if isAPIRoutePath(c) {
+		if shouldSkipCSP(c) {
 			c.Next()
 			return
 		}
@@ -149,6 +149,17 @@ func SecurityHeaders(cfg config.CSPConfig, getFrameSrcOrigins func() []string) g
 		}
 		c.Next()
 	}
+}
+
+func shouldSkipCSP(c *gin.Context) bool {
+	return isAPIRoutePath(c) || isSwaggerPath(c)
+}
+
+func isSwaggerPath(c *gin.Context) bool {
+	if c == nil || c.Request == nil || c.Request.URL == nil {
+		return false
+	}
+	return strings.HasPrefix(c.Request.URL.Path, "/swagger")
 }
 
 func isAPIRoutePath(c *gin.Context) bool {
