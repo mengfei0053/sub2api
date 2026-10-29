@@ -1,7 +1,12 @@
 # syntax=docker/dockerfile:1
 
+# Thin config-only image. There is no compile step; each published arch uses
+# that platform's nginx image. `rm` is the only command QEMU may emulate.
+
 ARG NGINX_IMAGE=nginx:1.27-alpine
 
+# Default platform is TARGETPLATFORM. Do not pin $TARGETPLATFORM;
+# `docker buildx build --check` rejects that as redundant.
 FROM ${NGINX_IMAGE}
 
 LABEL org.opencontainers.image.title="sub2api-ebeeai-gateway"
