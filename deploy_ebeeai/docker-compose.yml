@@ -1,0 +1,142 @@
+name: sub2api-ebeeai
+
+services:
+  gateway:
+    image: ${SUB2API_IMAGE:?SUB2API_IMAGE is required}-gateway:${SUB2API_VERSION:?SUB2API_VERSION is required}
+    build:
+      context: ..
+      dockerfile: deploy_ebeeai/Dockerfile.gateway
+    container_name: ${SUB2API_CONTAINER_NAME:-sub2api}-gateway
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend_self:
+        condition: service_healthy
+      frontend_docs:
+        condition: service_healthy
+    ports:
+      - "${SUB2API_BIND_HOST:-127.0.0.1}:${SUB2API_HOST_PORT:-8080}:80"
+    networks:
+      onepanel:
+        aliases:
+          - sub2api
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-T", "5", "-O", "/dev/null", "http://127.0.0.1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  backend:
+    image: ${SUB2API_IMAGE:?SUB2API_IMAGE is required}-backend:${SUB2API_VERSION:?SUB2API_VERSION is required}
+    build:
+      context: ..
+      dockerfile: deploy_ebeeai/Dockerfile.backend
+      args:
+        GOPROXY: https://goproxy.cn,direct
+        GOSUMDB: sum.golang.google.cn
+    container_name: ${SUB2API_CONTAINER_NAME:-sub2api}-backend
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 45s
+    ulimits:
+      nofile:
+        soft: 100000
+        hard: 100000
+    volumes:
+      - ${SUB2API_DATA_DIR:-./data}:/app/data
+    environment:
+      AUTO_SETUP: "true"
+      SERVER_HOST: "0.0.0.0"
+      SERVER_PORT: "8080"
+      SERVER_MODE: "release"
+      GIN_MODE: "release"
+      RUN_MODE: ${RUN_MODE:-standard}
+      TZ: ${TZ:-Asia/Shanghai}
+
+      DATABASE_HOST: ${DATABASE_HOST:?DATABASE_HOST is required}
+      DATABASE_PORT: ${DATABASE_PORT:-5432}
+      DATABASE_USER: ${DATABASE_USER:?DATABASE_USER is required}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD is required}
+      DATABASE_DBNAME: ${DATABASE_DBNAME:-sub2api}
+      DATABASE_SSLMODE: ${DATABASE_SSLMODE:-disable}
+
+      REDIS_HOST: ${REDIS_HOST:?REDIS_HOST is required}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_DB: ${REDIS_DB:-0}
+      REDIS_ENABLE_TLS: ${REDIS_ENABLE_TLS:-false}
+
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_EXPIRE_HOUR: ${JWT_EXPIRE_HOUR:-24}
+      TOTP_ENCRYPTION_KEY: ${TOTP_ENCRYPTION_KEY:-}
+
+      SECURITY_URL_ALLOWLIST_ENABLED: ${SECURITY_URL_ALLOWLIST_ENABLED:-false}
+      SECURITY_URL_ALLOWLIST_ALLOW_INSECURE_HTTP: ${SECURITY_URL_ALLOWLIST_ALLOW_INSECURE_HTTP:-false}
+      SECURITY_URL_ALLOWLIST_ALLOW_PRIVATE_HOSTS: ${SECURITY_URL_ALLOWLIST_ALLOW_PRIVATE_HOSTS:-false}
+    networks:
+      - onepanel
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-T", "5", "-O", "/dev/null", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  frontend_self:
+    image: ${SUB2API_IMAGE:?SUB2API_IMAGE is required}-app:${SUB2API_VERSION:?SUB2API_VERSION is required}
+    build:
+      context: ..
+      dockerfile: deploy_ebeeai/Dockerfile.frontend_self
+    container_name: ${SUB2API_CONTAINER_NAME:-sub2api}-app
+    restart: unless-stopped
+    networks:
+      - onepanel
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-T", "5", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  frontend_docs:
+    image: ${SUB2API_IMAGE:?SUB2API_IMAGE is required}-docs:${SUB2API_VERSION:?SUB2API_VERSION is required}
+    build:
+      context: ..
+      dockerfile: deploy_ebeeai/Dockerfile.frontend_docs
+    container_name: ${SUB2API_CONTAINER_NAME:-sub2api}-docs
+    restart: unless-stopped
+    networks:
+      - onepanel
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-T", "5", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+networks:
+  onepanel:
+    name: ${ONEPANEL_NETWORK:-1panel-network}
+    external: true

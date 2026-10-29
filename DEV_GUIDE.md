@@ -232,7 +232,33 @@ git add ent/       # 生成的文件也要提交
 
 ---
 
-### 坑 11：PR 提交前检查清单
+### 坑 11：同步 upstream 后忘记更新 frontend_self
+
+**问题**：合并 upstream 后只验证了 `frontend/`，`frontend_self/` 仍停留在旧 API/路由/i18n，本地定制版运行报错或行为不一致。
+
+**解决**：合并后立即运行 `make check-frontend-self-sync`，按脚本输出的文件列表决定是全量 rsync 还是逐文件手动合并。
+
+**原则**：
+
+- `frontend/` = 上游真相源；**仅在上游同步时修改**，与 upstream 分支保持一致
+- `frontend_self/` = **日常开发目录**；在真相源之上做 UI/行为定制；上游结构性变更（api、stores、router、i18n）必须跟进
+
+---
+
+### 坑 13：在 frontend/ 做本地定制
+
+**问题**：在 `frontend/` 改 UI 或行为（例如固定浅色主题），EbeeAI 实际构建用的是 `frontend_self/`，改动不生效；且污染 upstream 镜像目录，同步时产生多余冲突。
+
+**解决**：
+
+- 本地需求、EbeeAI 定制 → **只改 `frontend_self/`**
+- `frontend/` → **只在** `git fetch upstream && git merge upstream/main`（或 rebase）时更新
+
+**验证**：`deploy_ebeeai` 与 GHCR 镜像的 `FRONTEND_DIR` 为 `frontend_self`；本地开发也在 `frontend_self` 下 `pnpm run dev` / `pnpm run build`。
+
+---
+
+### 坑 12：PR 提交前检查清单
 
 提交 PR 前务必本地验证：
 
@@ -242,6 +268,7 @@ git add ent/       # 生成的文件也要提交
 - [ ] `pnpm-lock.yaml` 已同步（如果改了 package.json）
 - [ ] 所有 test stub 补全新接口方法（如果改了 interface）
 - [ ] Ent 生成的代码已提交（如果改了 schema）
+- [ ] 若刚同步 upstream：`make check-frontend-self-sync` 已运行，并确认 `frontend_self/` 是否需要跟进
 
 ## 五、常用命令速查
 
@@ -270,27 +297,94 @@ git checkout main
 git merge upstream/main
 git push origin main
 
+# ⚠️ 合并后立即检查 frontend 变更，评估是否同步到 frontend_self
+make check-frontend-self-sync
+
 # 创建功能分支
 git checkout -b feature/xxx
 
 # Rebase 到最新 main
 git fetch upstream
 git rebase upstream/main
+
+# Rebase 后同样建议检查
+make check-frontend-self-sync
 ```
+
+### 同步上游与 frontend_self
+
+仓库中有两个前端目录：
+
+| 目录 | 用途 |
+|------|------|
+| `frontend/` | 与上游 **Wei-Shaw/sub2api** 对齐的标准前端；**仅在上游同步时修改** |
+| `frontend_self/` | **日常开发与 EbeeAI 发布**用的本地 UI 定制副本；按需从 `frontend/` 跟进 upstream |
+
+**日常开发**：功能、样式、主题等行为变更 → 只编辑 `frontend_self/`。
+
+**上游同步**：`git merge upstream/main` 后更新 `frontend/` → 运行 `make check-frontend-self-sync` → 将需要的变更合并进 `frontend_self/`。
+
+**每次同步 upstream 后**，运行：
+
+```bash
+make check-frontend-self-sync
+```
+
+脚本会输出：
+
+1. 本次 merge/rebase 相对 upstream 的 `frontend/` 变更文件列表
+2. `frontend/` 与 `frontend_self/` 的目录差异
+3. `frontend_self/` 相对 `frontend/` 的本地独有改动
+4. 是否需要更新 `pnpm-lock.yaml`
+
+**是否需要同步到 `frontend_self`？**
+
+| 变更类型 | 建议 |
+|----------|------|
+| API 客户端、类型定义、Pinia stores、路由 | 通常 **需要** 同步 |
+| i18n 文案 key 变更 | 通常 **需要** 同步 |
+| 共享组件 bug 修复 | **建议** 同步 |
+| 你已在 `frontend_self` 重写的页面/样式 | **不要整目录覆盖**，手动合并 |
+| 上游新增但你不需要的功能页 | 可跳过 |
+
+**同步示例**（先预览再写入）：
+
+```bash
+# 预览
+rsync -rcn --exclude node_modules --exclude dist --exclude .vite --exclude coverage \
+  frontend/ frontend_self/
+
+# 写入
+rsync -av --exclude node_modules --exclude dist --exclude .vite --exclude coverage \
+  frontend/ frontend_self/
+
+cd frontend_self && pnpm install && pnpm run typecheck
+```
+
+更多说明见 [`frontend_self/README.md`](frontend_self/README.md)。
 
 ### 前端操作
 
+**EbeeAI / 本地定制（默认）**：
+
 ```bash
-# 安装依赖（必须用 pnpm）
+cd frontend_self
+pnpm install
+pnpm run dev      # 开发服务器
+pnpm run build    # 生产构建
+pnpm run typecheck
+```
+
+**上游镜像 `frontend/`**（仅同步 upstream 后校验，或非 EbeeAI 场景）：
+
+```bash
 cd frontend
 pnpm install
-
-# 开发服务器
 pnpm dev
-
-# 构建
 pnpm build
 ```
+
+根目录 `make test` / `make build` 仍针对 `frontend/`。验证 `frontend_self` 请在 `frontend_self/` 目录单独执行命令。
 
 ### 后端操作
 
@@ -325,7 +419,7 @@ sub2api-bmai/
 │   │   └── server/          # 服务器配置
 │   ├── migrations/          # 数据库迁移脚本
 │   └── config.yaml          # 配置文件
-├── frontend/
+├── frontend/                # 上游对齐的标准前端
 │   ├── src/
 │   │   ├── api/             # API 调用
 │   │   ├── components/      # Vue 组件
@@ -334,6 +428,7 @@ sub2api-bmai/
 │   │   └── i18n/            # 国际化
 │   ├── package.json         # 依赖配置
 │   └── pnpm-lock.yaml       # pnpm 锁文件（必须提交）
+├── frontend_self/           # 本地 UI 定制副本（见 frontend_self/README.md）
 └── .claude/
     └── CLAUDE.md            # 本文档
 ```

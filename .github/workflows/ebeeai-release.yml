@@ -1,0 +1,333 @@
+name: EbeeAI Release
+
+on:
+  push:
+    tags:
+      - 'v*_*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g., v0.1.127_0.0.1)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+  # docker/build-push-action GHA cache (type=gha) writes with this scope.
+  # Explicit permissions above replace the default token, so cache writes
+  # need to be granted on their own.
+  actions: write
+
+env:
+  IMAGE_NAME: sub2api-ebeeai
+  # Both architectures stay on every published tag. Heavy compile steps run
+  # on the runner via Dockerfile BUILDPLATFORM; see deploy_ebeeai/Dockerfile*.
+  PLATFORMS: linux/amd64,linux/arm64
+
+jobs:
+  resolve-version:
+    runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.parse.outputs.tag_name }}
+      release_version: ${{ steps.parse.outputs.release_version }}
+      upstream_version: ${{ steps.parse.outputs.upstream_version }}
+      ebeeai_version: ${{ steps.parse.outputs.ebeeai_version }}
+      sync_branch: ${{ steps.parse.outputs.sync_branch }}
+      image: ${{ steps.meta.outputs.image }}
+      commit: ${{ steps.meta.outputs.commit }}
+      build_date: ${{ steps.meta.outputs.build_date }}
+    steps:
+      - name: Parse release tag
+        id: parse
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_NAME="${{ github.event.inputs.tag }}"
+          else
+            TAG_NAME="${GITHUB_REF_NAME}"
+          fi
+
+          if [[ ! "$TAG_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+_[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Expected tag format v<upstream>_<ebeeai>, got: $TAG_NAME"
+            exit 1
+          fi
+
+          RELEASE_VERSION="${TAG_NAME#v}"
+          UPSTREAM_VERSION="${RELEASE_VERSION%%_*}"
+          EBEEAI_VERSION="${RELEASE_VERSION#*_}"
+
+          {
+            echo "tag_name=${TAG_NAME}"
+            echo "release_version=${RELEASE_VERSION}"
+            echo "upstream_version=${UPSTREAM_VERSION}"
+            echo "ebeeai_version=${EBEEAI_VERSION}"
+            echo "sync_branch=release/v${UPSTREAM_VERSION}"
+          } >> "${GITHUB_OUTPUT}"
+
+          echo "Tag: ${TAG_NAME}"
+          echo "Upstream version: ${UPSTREAM_VERSION}"
+          echo "EbeeAI version: ${EBEEAI_VERSION}"
+
+      - name: Checkout release tag
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.parse.outputs.tag_name }}
+
+      - name: Resolve image metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          owner="$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
+          image="ghcr.io/${owner}/${IMAGE_NAME}"
+          commit="$(git rev-parse --short=12 HEAD)"
+          build_date="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+          {
+            echo "image=${image}"
+            echo "commit=${commit}"
+            echo "build_date=${build_date}"
+          } >> "${GITHUB_OUTPUT}"
+
+          echo "Image: ${image}"
+          echo "Commit: ${commit}"
+
+  update-version:
+    needs: [resolve-version]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Update VERSION file
+        run: |
+          echo "${{ needs.resolve-version.outputs.upstream_version }}" > backend/cmd/server/VERSION
+          echo "Updated VERSION file to: $(cat backend/cmd/server/VERSION)"
+
+      - name: Upload VERSION artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ebeeai-version-file
+          path: backend/cmd/server/VERSION
+          retention-days: 1
+
+  build:
+    name: Build ${{ matrix.component }}
+    needs: [resolve-version, update-version]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - component: backend
+            dockerfile: deploy_ebeeai/Dockerfile.backend
+            cache_scope: ebeeai-release-backend
+            title: sub2api-ebeeai-backend
+            description: Sub2API backend for the EbeeAI split deployment
+          - component: app
+            dockerfile: deploy_ebeeai/Dockerfile.frontend_self
+            cache_scope: ebeeai-release-app
+            title: sub2api-ebeeai-app
+            description: EbeeAI app SPA for the split deployment
+          - component: docs
+            dockerfile: deploy_ebeeai/Dockerfile.frontend_docs
+            cache_scope: ebeeai-release-docs
+            title: sub2api-ebeeai-docs
+            description: EbeeAI marketing site and docs for the split deployment
+          - component: gateway
+            dockerfile: deploy_ebeeai/Dockerfile.gateway
+            cache_scope: ebeeai-release-gateway
+            title: sub2api-ebeeai-gateway
+            description: Path router for the EbeeAI split deployment
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.resolve-version.outputs.tag_name }}
+
+      - name: Download VERSION artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: ebeeai-version-file
+          path: backend/cmd/server/
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve build-args
+        id: build_args
+        shell: bash
+        env:
+          COMPONENT: ${{ matrix.component }}
+          UPSTREAM_VERSION: ${{ needs.resolve-version.outputs.upstream_version }}
+          COMMIT: ${{ needs.resolve-version.outputs.commit }}
+          BUILD_DATE: ${{ needs.resolve-version.outputs.build_date }}
+        run: |
+          set -euo pipefail
+          if [ "${COMPONENT}" != "backend" ]; then
+            echo "value=" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          {
+            echo "value<<EOF"
+            echo "VERSION=${UPSTREAM_VERSION}"
+            echo "COMMIT=${COMMIT}"
+            echo "DATE=${BUILD_DATE}"
+            echo "GOPROXY=https://proxy.golang.org,direct"
+            echo "GOSUMDB=sum.golang.org"
+            echo "EOF"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Build and push ${{ matrix.component }} image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          platforms: ${{ env.PLATFORMS }}
+          push: true
+          tags: |
+            ${{ needs.resolve-version.outputs.image }}-${{ matrix.component }}:sha-${{ needs.resolve-version.outputs.commit }}
+            ${{ needs.resolve-version.outputs.image }}-${{ matrix.component }}:${{ needs.resolve-version.outputs.release_version }}
+            ${{ needs.resolve-version.outputs.image }}-${{ matrix.component }}:${{ needs.resolve-version.outputs.upstream_version }}
+            ${{ needs.resolve-version.outputs.image }}-${{ matrix.component }}:latest
+          build-args: ${{ steps.build_args.outputs.value }}
+          cache-from: type=gha,scope=${{ matrix.cache_scope }}
+          cache-to: type=gha,scope=${{ matrix.cache_scope }},mode=max
+          labels: |
+            org.opencontainers.image.title=${{ matrix.title }}
+            org.opencontainers.image.description=${{ matrix.description }}
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ needs.resolve-version.outputs.release_version }}
+            org.opencontainers.image.created=${{ needs.resolve-version.outputs.build_date }}
+
+  release:
+    needs: [resolve-version, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.resolve-version.outputs.tag_name }}
+
+      - name: Fetch tags with annotations
+        run: git fetch --tags --force
+
+      - name: Get tag message
+        id: tag_message
+        shell: bash
+        run: |
+          TAG_NAME='${{ needs.resolve-version.outputs.tag_name }}'
+          TAG_MESSAGE="$(git tag -l --format='%(contents:body)' "$TAG_NAME")"
+
+          echo "message<<EOF" >> "${GITHUB_OUTPUT}"
+          echo "${TAG_MESSAGE}" >> "${GITHUB_OUTPUT}"
+          echo "EOF" >> "${GITHUB_OUTPUT}"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ needs.resolve-version.outputs.tag_name }}
+          RELEASE_VERSION: ${{ needs.resolve-version.outputs.release_version }}
+          UPSTREAM_VERSION: ${{ needs.resolve-version.outputs.upstream_version }}
+          EBEEAI_VERSION: ${{ needs.resolve-version.outputs.ebeeai_version }}
+          IMAGE: ${{ needs.resolve-version.outputs.image }}
+          TAG_MESSAGE: ${{ steps.tag_message.outputs.message }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BODY_FILE="$(mktemp)"
+          {
+            echo "> EbeeAI Sub2API release built from \`frontend_self/\`, \`frontend_docs/\`, and \`deploy_ebeeai/\`."
+            echo
+            echo "- Upstream Sub2API version: \`${UPSTREAM_VERSION}\`"
+            echo "- EbeeAI service version: \`${EBEEAI_VERSION}\`"
+            echo
+            if [ -n "${TAG_MESSAGE}" ]; then
+              echo "${TAG_MESSAGE}"
+              echo
+            fi
+            echo "## Docker (split stack)"
+            echo
+            echo '```bash'
+            echo "docker pull ${IMAGE}-backend:${RELEASE_VERSION}"
+            echo "docker pull ${IMAGE}-app:${RELEASE_VERSION}"
+            echo "docker pull ${IMAGE}-docs:${RELEASE_VERSION}"
+            echo "docker pull ${IMAGE}-gateway:${RELEASE_VERSION}"
+            echo '```'
+            echo
+            echo "## 1Panel"
+            echo
+            echo "Set \`SUB2API_VERSION=${RELEASE_VERSION}\` in the EbeeAI compose environment, then pull and recreate the stack (gateway + backend + app + docs)."
+          } > "${BODY_FILE}"
+
+          gh release view "${TAG_NAME}" >/dev/null 2>&1 && \
+            gh release delete "${TAG_NAME}" --yes --cleanup-tag=false || true
+
+          gh release create "${TAG_NAME}" \
+            --title "EbeeAI ${RELEASE_VERSION}" \
+            --notes-file "${BODY_FILE}"
+
+      - name: Print image tags
+        env:
+          IMAGE: ${{ needs.resolve-version.outputs.image }}
+          RELEASE_VERSION: ${{ needs.resolve-version.outputs.release_version }}
+          UPSTREAM_VERSION: ${{ needs.resolve-version.outputs.upstream_version }}
+          COMMIT: ${{ needs.resolve-version.outputs.commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in backend app docs gateway; do
+            for tag in "sha-${COMMIT}" "${RELEASE_VERSION}" "${UPSTREAM_VERSION}" latest; do
+              echo "${IMAGE}-${name}:${tag}"
+            done
+          done
+
+  sync-version-file:
+    needs: [resolve-version, release]
+    if: ${{ needs.release.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sync branch
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.resolve-version.outputs.sync_branch }}
+
+      - name: Sync VERSION file to sync branch
+        env:
+          UPSTREAM_VERSION: ${{ needs.resolve-version.outputs.upstream_version }}
+          SYNC_BRANCH: ${{ needs.resolve-version.outputs.sync_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          CURRENT_VERSION="$(tr -d '\r\n' < backend/cmd/server/VERSION || true)"
+          if [ "${CURRENT_VERSION}" = "${UPSTREAM_VERSION}" ]; then
+            echo "VERSION file already matches ${UPSTREAM_VERSION}"
+            exit 0
+          fi
+
+          echo "${UPSTREAM_VERSION}" > backend/cmd/server/VERSION
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend/cmd/server/VERSION
+          git commit -m "chore: sync VERSION to ${UPSTREAM_VERSION} [skip ci]"
+          git push origin HEAD:${SYNC_BRANCH}

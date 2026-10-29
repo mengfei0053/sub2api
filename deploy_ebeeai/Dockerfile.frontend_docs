@@ -1,0 +1,40 @@
+# syntax=docker/dockerfile:1
+
+# Docusaurus emits static files, so the Node builder runs once on
+# BUILDPLATFORM (native on the GitHub runner). Only the nginx runtime is
+# built per target arch. pnpm install and `docusaurus build` are not run
+# under QEMU.
+
+ARG NODE_IMAGE=node:24-alpine
+ARG NGINX_IMAGE=nginx:1.27-alpine
+
+FROM --platform=$BUILDPLATFORM ${NODE_IMAGE} AS docs-builder
+
+ARG SITE_URL=https://ebeeai.net
+ENV SITE_URL=${SITE_URL}
+
+WORKDIR /app/frontend_docs
+
+RUN corepack enable && corepack prepare pnpm@9 --activate
+
+COPY frontend_docs/package.json frontend_docs/pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+COPY frontend_docs/ ./
+RUN pnpm run build
+
+# Default platform is TARGETPLATFORM (per-arch nginx). Do not pin
+# $TARGETPLATFORM; `docker buildx build --check` rejects that as redundant.
+FROM ${NGINX_IMAGE} AS runtime
+
+LABEL org.opencontainers.image.title="sub2api-ebeeai-docs"
+LABEL org.opencontainers.image.description="EbeeAI marketing site and docs (frontend_docs) for split deployment"
+LABEL org.opencontainers.image.source="https://github.com/Wei-Shaw/sub2api"
+
+COPY deploy_ebeeai/nginx/frontend-docs.conf /etc/nginx/conf.d/default.conf
+COPY --from=docs-builder /app/frontend_docs/build /usr/share/nginx/html
+
+EXPOSE 80
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget -q -T 3 -O /dev/null http://127.0.0.1/ || exit 1

@@ -1,0 +1,176 @@
+/**
+ * EbeeAI enterprise theme — aligned with frontend_self/tailwind.config.js
+ */
+
+:root {
+  /* Primary — black enterprise palette */
+  --ifm-color-primary: #000000;
+  --ifm-color-primary-dark: #1c1b1b;
+  --ifm-color-primary-darker: #1b1b1b;
+  --ifm-color-primary-darkest: #000000;
+  --ifm-color-primary-light: #313030;
+  --ifm-color-primary-lighter: #4c4546;
+  --ifm-color-primary-lightest: #5e5e5e;
+
+  /* Surfaces */
+  --ifm-background-color: #fcf9f8;
+  --ifm-background-surface-color: #ffffff;
+  --ifm-font-color-base: #1c1b1b;
+  --ifm-font-color-secondary: #4c4546;
+  --ifm-color-content-secondary: #7e7576;
+
+  /* Layout chrome */
+  --ifm-navbar-background-color: rgba(252, 249, 248, 0.92);
+  --ifm-navbar-shadow: 0 1px 0 #eae7e7;
+  --ifm-footer-background-color: #1c1b1b;
+  --ifm-footer-color: #f3f0ef;
+  --ifm-footer-link-color: #c6c6c6;
+  --ifm-footer-link-hover-color: #ffffff;
+
+  /* Typography */
+  --ifm-font-family-base: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    sans-serif;
+  --ifm-heading-font-weight: 600;
+  --ifm-code-font-size: 95%;
+
+  /* Borders & elevation */
+  --ifm-global-border-width: 1px;
+  --ifm-global-radius: 0.75rem;
+  --ifm-card-border-radius: 1rem;
+  --ifm-global-shadow-lw: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --ifm-global-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --ifm-hover-overlay: rgba(0, 0, 0, 0.04);
+
+  /* Code blocks */
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.06);
+  --ifm-code-background: #f6f3f2;
+  --ifm-pre-background: #f0eded;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background-color: var(--ifm-background-color);
+}
+
+.navbar {
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #eae7e7;
+}
+
+.navbar__title {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.navbar__link {
+  font-weight: 500;
+}
+
+.navbar__link--active {
+  color: var(--ifm-color-primary);
+}
+
+.button--primary {
+  background: linear-gradient(135deg, #000000 0%, #1b1b1b 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.button--primary:hover {
+  background: linear-gradient(135deg, #1b1b1b 0%, #313030 100%);
+  color: #ffffff;
+}
+
+.button--secondary {
+  background-color: #ffffff;
+  border: 1px solid #cfc4c5;
+  color: #1c1b1b;
+}
+
+.button--secondary:hover {
+  background-color: #f6f3f2;
+  border-color: #7e7576;
+  color: #000000;
+}
+
+.hero--primary {
+  background: radial-gradient(at 40% 20%, rgba(0, 0, 0, 0.04) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(0, 0, 0, 0.03) 0px, transparent 50%),
+    linear-gradient(180deg, #fcf9f8 0%, #f6f3f2 100%);
+  color: #1c1b1b;
+}
+
+.hero__title {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.hero__subtitle {
+  color: #4c4546;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #eae7e7;
+  box-shadow: var(--ifm-global-shadow-lw);
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  background-color: #f6f3f2;
+  color: #000000;
+  font-weight: 600;
+}
+
+.table-of-contents__link--active {
+  color: #000000;
+  font-weight: 600;
+}
+
+.footer--dark {
+  --ifm-footer-background-color: #1c1b1b;
+}
+
+.footer__title {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.theme-doc-markdown h1,
+.theme-doc-markdown h2,
+.theme-doc-markdown h3 {
+  letter-spacing: -0.02em;
+}
+
+.theme-doc-markdown a {
+  color: #000000;
+  text-decoration-color: #cfc4c5;
+}
+
+.theme-doc-markdown a:hover {
+  text-decoration-color: #000000;
+}
+
+/* Marketing homepage: hide Docusaurus chrome (navbar is sibling of main wrapper) */
+html:has(.ebeeai-home) .navbar,
+html:has(.ebeeai-home) .navbar-sidebar,
+html:has(.ebeeai-home) [role='region'][aria-label='跳到主要内容'],
+html.ebeeai-marketing-home .navbar,
+html.ebeeai-marketing-home .navbar-sidebar,
+html.ebeeai-marketing-home [role='region'][aria-label='跳到主要内容'] {
+  display: none !important;
+}
+
+html:has(.ebeeai-home) .main-wrapper,
+html.ebeeai-marketing-home .main-wrapper {
+  padding-top: 0 !important;
+  max-width: none;
+}
+
+html:has(.ebeeai-home) .footer,
+html.ebeeai-marketing-home .footer {
+  display: none !important;
+}
