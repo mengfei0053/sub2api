@@ -1,9 +1,14 @@
 # syntax=docker/dockerfile:1
 
+# Docusaurus emits static files, so the Node builder runs once on
+# BUILDPLATFORM (native on the GitHub runner). Only the nginx runtime is
+# built per target arch. pnpm install and `docusaurus build` are not run
+# under QEMU.
+
 ARG NODE_IMAGE=node:24-alpine
 ARG NGINX_IMAGE=nginx:1.27-alpine
 
-FROM ${NODE_IMAGE} AS docs-builder
+FROM --platform=$BUILDPLATFORM ${NODE_IMAGE} AS docs-builder
 
 ARG SITE_URL=https://ebeeai.net
 ENV SITE_URL=${SITE_URL}
@@ -18,6 +23,8 @@ RUN pnpm install --frozen-lockfile
 COPY frontend_docs/ ./
 RUN pnpm run build
 
+# Default platform is TARGETPLATFORM (per-arch nginx). Do not pin
+# $TARGETPLATFORM; `docker buildx build --check` rejects that as redundant.
 FROM ${NGINX_IMAGE} AS runtime
 
 LABEL org.opencontainers.image.title="sub2api-ebeeai-docs"
