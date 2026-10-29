@@ -3,6 +3,9 @@
 # EbeeAI production image (legacy monolith: backend embeds frontend_self).
 # For current production, use the split stack in docker-compose.yml:
 #   Dockerfile.backend, Dockerfile.frontend_self, Dockerfile.frontend_docs, Dockerfile.gateway
+#
+# Same multi-arch layout as the split images: Node and Go run on
+# BUILDPLATFORM, and only the Alpine runtime follows TARGETPLATFORM.
 
 ARG NODE_IMAGE=node:24-alpine
 ARG GOLANG_IMAGE=golang:1.27.2-alpine
@@ -13,7 +16,7 @@ ARG GOSUMDB=sum.golang.google.cn
 # EbeeAI images use the customized UI fork; upstream-aligned frontend/ stays untouched.
 ARG FRONTEND_DIR=frontend_self
 
-FROM ${NODE_IMAGE} AS frontend-builder
+FROM --platform=$BUILDPLATFORM ${NODE_IMAGE} AS frontend-builder
 
 ARG FRONTEND_DIR=frontend_self
 
@@ -27,13 +30,15 @@ RUN pnpm install --frozen-lockfile
 COPY ${FRONTEND_DIR}/ ./
 RUN pnpm run build
 
-FROM ${GOLANG_IMAGE} AS backend-builder
+FROM --platform=$BUILDPLATFORM ${GOLANG_IMAGE} AS backend-builder
 
 ARG VERSION=
 ARG COMMIT=local
 ARG DATE=
 ARG GOPROXY
 ARG GOSUMDB
+ARG TARGETOS
+ARG TARGETARCH
 
 ENV GOPROXY=${GOPROXY}
 ENV GOSUMDB=${GOSUMDB}
@@ -51,13 +56,14 @@ COPY --from=frontend-builder /app/backend/internal/web/dist ./internal/web/dist
 RUN VERSION_VALUE="${VERSION}" && \
     if [ -z "${VERSION_VALUE}" ]; then VERSION_VALUE="$(tr -d '\r\n' < ./cmd/server/VERSION)"; fi && \
     DATE_VALUE="${DATE:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}" && \
-    CGO_ENABLED=0 GOOS=linux go build \
+    CGO_ENABLED=0 GOOS="${TARGETOS}" GOARCH="${TARGETARCH}" go build \
       -tags embed \
       -trimpath \
       -ldflags="-s -w -X main.Version=${VERSION_VALUE} -X main.Commit=${COMMIT} -X main.Date=${DATE_VALUE} -X main.BuildType=release" \
       -o /app/sub2api \
       ./cmd/server
 
+# Runtime stages follow TARGETPLATFORM by default. Do not pin it; see Dockerfile.backend.
 FROM ${POSTGRES_IMAGE} AS pg-client
 
 FROM ${ALPINE_IMAGE} AS runtime

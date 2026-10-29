@@ -99,6 +99,10 @@ echo "${VERSION}" > backend/cmd/server/VERSION
 ```sh
 cd frontend_self && pnpm run typecheck && cd ..
 docker compose --env-file deploy_ebeeai/.env.example -f deploy_ebeeai/docker-compose.yml config --quiet
+docker buildx build --check -f deploy_ebeeai/Dockerfile.backend .
+docker buildx build --check -f deploy_ebeeai/Dockerfile.frontend_self .
+docker buildx build --check -f deploy_ebeeai/Dockerfile.frontend_docs .
+docker buildx build --check -f deploy_ebeeai/Dockerfile.gateway .
 docker buildx build --check -f deploy_ebeeai/Dockerfile .
 ```
 
@@ -115,18 +119,37 @@ git tag v${VERSION}_${EBEEAI_VERSION}
 git push origin v${VERSION}_${EBEEAI_VERSION}
 ```
 
-这个 tag 会触发 `.github/workflows/ebeeai-release.yml`，并发布：
+这个 tag 会触发 `.github/workflows/ebeeai-release.yml`，为 backend、app、docs、gateway 各发布一组 tag。每个 tag 都是 `linux/amd64` + `linux/arm64` 的 manifest：
 
 ```text
-ghcr.io/<github-owner>/sub2api-ebeeai:<上游版本>_<EbeeAI版本>
-ghcr.io/<github-owner>/sub2api-ebeeai:<上游版本>
-ghcr.io/<github-owner>/sub2api-ebeeai:sha-<commit>
-ghcr.io/<github-owner>/sub2api-ebeeai:latest
+ghcr.io/<github-owner>/sub2api-ebeeai-{backend,app,docs,gateway}:<上游版本>_<EbeeAI版本>
+ghcr.io/<github-owner>/sub2api-ebeeai-{backend,app,docs,gateway}:<上游版本>
+ghcr.io/<github-owner>/sub2api-ebeeai-{backend,app,docs,gateway}:sha-<commit>
+ghcr.io/<github-owner>/sub2api-ebeeai-{backend,app,docs,gateway}:latest
 ```
+
+重量级步骤在 runner 本机架构完成：Go 用 `GOOS`/`GOARCH` 交叉编译，前端只产出静态文件后再拷进对应架构的 nginx。arm64 不再用 QEMU 跑编译、`pnpm install` 或 Docusaurus/Vite。四个镜像并行构建，GitHub Release 仍在四个镜像都推送成功之后创建一次。
 
 同时会创建 GitHub Release，并把 `backend/cmd/server/VERSION` 同步回该 tag 对应的 release 分支（`release/v<上游版本>`）。
 
 9. 之后的开发都在新的 `release/v${VERSION}` 分支上进行，直到下次升级再重复本流程。
+
+## 重新触发一次已取消或过慢的发布
+
+Actions 使用 **tag 指向的那次提交** 里的 workflow 和 Dockerfile。对已经推送的 tag 点 Re-run，或者重跑被取消的 run，构建的仍是旧提交，不会带上后来合并的 Dockerfile 改动。
+
+要让构建改动生效，先把改动合并进对应的 `release/v<上游版本>` 分支，再在那个提交上打一个新的补丁 tag。不要移动、删除或覆盖已经推送过的 tag。
+
+```sh
+export VERSION=0.2.17
+export EBEEAI_VERSION=0.0.3
+git switch release/v${VERSION}
+git pull
+git tag v${VERSION}_${EBEEAI_VERSION}
+git push origin v${VERSION}_${EBEEAI_VERSION}
+```
+
+合并之后也可以在 Actions 里手动运行 “EbeeAI Release”（`workflow_dispatch`），`tag` 填上面这个新 tag。这个 tag 必须指向已经包含本次 Dockerfile 改动的提交。推送 tag 是默认路径。
 
 ## 运维注意事项
 

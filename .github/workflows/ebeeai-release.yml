@@ -14,9 +14,16 @@ on:
 permissions:
   contents: write
   packages: write
+  # docker/build-push-action GHA cache (type=gha) writes with this scope.
+  # Explicit permissions above replace the default token, so cache writes
+  # need to be granted on their own.
+  actions: write
 
 env:
   IMAGE_NAME: sub2api-ebeeai
+  # Both architectures stay on every published tag. Heavy compile steps run
+  # on the runner via Dockerfile BUILDPLATFORM; see deploy_ebeeai/Dockerfile*.
+  PLATFORMS: linux/amd64,linux/arm64
 
 jobs:
   resolve-version:
@@ -27,6 +34,9 @@ jobs:
       upstream_version: ${{ steps.parse.outputs.upstream_version }}
       ebeeai_version: ${{ steps.parse.outputs.ebeeai_version }}
       sync_branch: ${{ steps.parse.outputs.sync_branch }}
+      image: ${{ steps.meta.outputs.image }}
+      commit: ${{ steps.meta.outputs.commit }}
+      build_date: ${{ steps.meta.outputs.build_date }}
     steps:
       - name: Parse release tag
         id: parse
@@ -61,6 +71,31 @@ jobs:
           echo "Upstream version: ${UPSTREAM_VERSION}"
           echo "EbeeAI version: ${EBEEAI_VERSION}"
 
+      - name: Checkout release tag
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.parse.outputs.tag_name }}
+
+      - name: Resolve image metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          owner="$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
+          image="ghcr.io/${owner}/${IMAGE_NAME}"
+          commit="$(git rev-parse --short=12 HEAD)"
+          build_date="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+          {
+            echo "image=${image}"
+            echo "commit=${commit}"
+            echo "build_date=${build_date}"
+          } >> "${GITHUB_OUTPUT}"
+
+          echo "Image: ${image}"
+          echo "Commit: ${commit}"
+
   update-version:
     needs: [resolve-version]
     runs-on: ubuntu-latest
@@ -80,14 +115,39 @@ jobs:
           path: backend/cmd/server/VERSION
           retention-days: 1
 
-  release:
+  build:
+    name: Build ${{ matrix.component }}
     needs: [resolve-version, update-version]
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - component: backend
+            dockerfile: deploy_ebeeai/Dockerfile.backend
+            cache_scope: ebeeai-release-backend
+            title: sub2api-ebeeai-backend
+            description: Sub2API backend for the EbeeAI split deployment
+          - component: app
+            dockerfile: deploy_ebeeai/Dockerfile.frontend_self
+            cache_scope: ebeeai-release-app
+            title: sub2api-ebeeai-app
+            description: EbeeAI app SPA for the split deployment
+          - component: docs
+            dockerfile: deploy_ebeeai/Dockerfile.frontend_docs
+            cache_scope: ebeeai-release-docs
+            title: sub2api-ebeeai-docs
+            description: EbeeAI marketing site and docs for the split deployment
+          - component: gateway
+            dockerfile: deploy_ebeeai/Dockerfile.gateway
+            cache_scope: ebeeai-release-gateway
+            title: sub2api-ebeeai-gateway
+            description: Path router for the EbeeAI split deployment
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
           ref: ${{ needs.resolve-version.outputs.tag_name }}
 
       - name: Download VERSION artifact
@@ -96,46 +156,75 @@ jobs:
           name: ebeeai-version-file
           path: backend/cmd/server/
 
-      - name: Resolve image metadata
-        id: meta
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve build-args
+        id: build_args
         shell: bash
+        env:
+          COMPONENT: ${{ matrix.component }}
+          UPSTREAM_VERSION: ${{ needs.resolve-version.outputs.upstream_version }}
+          COMMIT: ${{ needs.resolve-version.outputs.commit }}
+          BUILD_DATE: ${{ needs.resolve-version.outputs.build_date }}
         run: |
           set -euo pipefail
-
-          owner="$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
-          image="ghcr.io/${owner}/${IMAGE_NAME}"
-          commit="$(git rev-parse --short=12 HEAD)"
-          build_date="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          version="${{ needs.resolve-version.outputs.release_version }}"
-          upstream="${{ needs.resolve-version.outputs.upstream_version }}"
-
-          tags="${image}-backend:sha-${commit}"
-          tags="${tags}"$'\n'"${image}-backend:${version}"
-          tags="${tags}"$'\n'"${image}-backend:${upstream}"
-          tags="${tags}"$'\n'"${image}-backend:latest"
-          tags="${tags}"$'\n'"${image}-app:sha-${commit}"
-          tags="${tags}"$'\n'"${image}-app:${version}"
-          tags="${tags}"$'\n'"${image}-app:${upstream}"
-          tags="${tags}"$'\n'"${image}-app:latest"
-          tags="${tags}"$'\n'"${image}-docs:sha-${commit}"
-          tags="${tags}"$'\n'"${image}-docs:${version}"
-          tags="${tags}"$'\n'"${image}-docs:${upstream}"
-          tags="${tags}"$'\n'"${image}-docs:latest"
-          tags="${tags}"$'\n'"${image}-gateway:sha-${commit}"
-          tags="${tags}"$'\n'"${image}-gateway:${version}"
-          tags="${tags}"$'\n'"${image}-gateway:${upstream}"
-          tags="${tags}"$'\n'"${image}-gateway:latest"
-
+          if [ "${COMPONENT}" != "backend" ]; then
+            echo "value=" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
           {
-            echo "image=${image}"
-            echo "version=${version}"
-            echo "upstream=${upstream}"
-            echo "commit=${commit}"
-            echo "build_date=${build_date}"
-            echo "tags<<EOF"
-            echo "${tags}"
+            echo "value<<EOF"
+            echo "VERSION=${UPSTREAM_VERSION}"
+            echo "COMMIT=${COMMIT}"
+            echo "DATE=${BUILD_DATE}"
+            echo "GOPROXY=https://proxy.golang.org,direct"
+            echo "GOSUMDB=sum.golang.org"
             echo "EOF"
           } >> "${GITHUB_OUTPUT}"
+
+      - name: Build and push ${{ matrix.component }} image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          platforms: ${{ env.PLATFORMS }}
+          push: true
+          tags: |
+            ${{ needs.resolve-version.outputs.image }}-${{ matrix.component }}:sha-${{ needs.resolve-version.outputs.commit }}
+            ${{ needs.resolve-version.outputs.image }}-${{ matrix.component }}:${{ needs.resolve-version.outputs.release_version }}
+            ${{ needs.resolve-version.outputs.image }}-${{ matrix.component }}:${{ needs.resolve-version.outputs.upstream_version }}
+            ${{ needs.resolve-version.outputs.image }}-${{ matrix.component }}:latest
+          build-args: ${{ steps.build_args.outputs.value }}
+          cache-from: type=gha,scope=${{ matrix.cache_scope }}
+          cache-to: type=gha,scope=${{ matrix.cache_scope }},mode=max
+          labels: |
+            org.opencontainers.image.title=${{ matrix.title }}
+            org.opencontainers.image.description=${{ matrix.description }}
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ needs.resolve-version.outputs.release_version }}
+            org.opencontainers.image.created=${{ needs.resolve-version.outputs.build_date }}
+
+  release:
+    needs: [resolve-version, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.resolve-version.outputs.tag_name }}
 
       - name: Fetch tags with annotations
         run: git fetch --tags --force
@@ -151,113 +240,6 @@ jobs:
           echo "${TAG_MESSAGE}" >> "${GITHUB_OUTPUT}"
           echo "EOF" >> "${GITHUB_OUTPUT}"
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push backend image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: deploy_ebeeai/Dockerfile.backend
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            ${{ steps.meta.outputs.image }}-backend:sha-${{ steps.meta.outputs.commit }}
-            ${{ steps.meta.outputs.image }}-backend:${{ steps.meta.outputs.version }}
-            ${{ steps.meta.outputs.image }}-backend:${{ steps.meta.outputs.upstream }}
-            ${{ steps.meta.outputs.image }}-backend:latest
-          build-args: |
-            VERSION=${{ steps.meta.outputs.upstream }}
-            COMMIT=${{ steps.meta.outputs.commit }}
-            DATE=${{ steps.meta.outputs.build_date }}
-            GOPROXY=https://proxy.golang.org,direct
-            GOSUMDB=sum.golang.org
-          cache-from: type=gha,scope=ebeeai-release-backend
-          cache-to: type=gha,scope=ebeeai-release-backend,mode=max
-          labels: |
-            org.opencontainers.image.title=sub2api-ebeeai-backend
-            org.opencontainers.image.description=Sub2API backend for the EbeeAI split deployment
-            org.opencontainers.image.source=https://github.com/${{ github.repository }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.version=${{ steps.meta.outputs.version }}
-            org.opencontainers.image.created=${{ steps.meta.outputs.build_date }}
-
-      - name: Build and push app image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: deploy_ebeeai/Dockerfile.frontend_self
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            ${{ steps.meta.outputs.image }}-app:sha-${{ steps.meta.outputs.commit }}
-            ${{ steps.meta.outputs.image }}-app:${{ steps.meta.outputs.version }}
-            ${{ steps.meta.outputs.image }}-app:${{ steps.meta.outputs.upstream }}
-            ${{ steps.meta.outputs.image }}-app:latest
-          cache-from: type=gha,scope=ebeeai-release-app
-          cache-to: type=gha,scope=ebeeai-release-app,mode=max
-          labels: |
-            org.opencontainers.image.title=sub2api-ebeeai-app
-            org.opencontainers.image.description=EbeeAI app SPA for the split deployment
-            org.opencontainers.image.source=https://github.com/${{ github.repository }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.version=${{ steps.meta.outputs.version }}
-            org.opencontainers.image.created=${{ steps.meta.outputs.build_date }}
-
-      - name: Build and push docs image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: deploy_ebeeai/Dockerfile.frontend_docs
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            ${{ steps.meta.outputs.image }}-docs:sha-${{ steps.meta.outputs.commit }}
-            ${{ steps.meta.outputs.image }}-docs:${{ steps.meta.outputs.version }}
-            ${{ steps.meta.outputs.image }}-docs:${{ steps.meta.outputs.upstream }}
-            ${{ steps.meta.outputs.image }}-docs:latest
-          cache-from: type=gha,scope=ebeeai-release-docs
-          cache-to: type=gha,scope=ebeeai-release-docs,mode=max
-          labels: |
-            org.opencontainers.image.title=sub2api-ebeeai-docs
-            org.opencontainers.image.description=EbeeAI marketing site and docs for the split deployment
-            org.opencontainers.image.source=https://github.com/${{ github.repository }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.version=${{ steps.meta.outputs.version }}
-            org.opencontainers.image.created=${{ steps.meta.outputs.build_date }}
-
-      - name: Build and push gateway image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: deploy_ebeeai/Dockerfile.gateway
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            ${{ steps.meta.outputs.image }}-gateway:sha-${{ steps.meta.outputs.commit }}
-            ${{ steps.meta.outputs.image }}-gateway:${{ steps.meta.outputs.version }}
-            ${{ steps.meta.outputs.image }}-gateway:${{ steps.meta.outputs.upstream }}
-            ${{ steps.meta.outputs.image }}-gateway:latest
-          cache-from: type=gha,scope=ebeeai-release-gateway
-          cache-to: type=gha,scope=ebeeai-release-gateway,mode=max
-          labels: |
-            org.opencontainers.image.title=sub2api-ebeeai-gateway
-            org.opencontainers.image.description=Path router for the EbeeAI split deployment
-            org.opencontainers.image.source=https://github.com/${{ github.repository }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.version=${{ steps.meta.outputs.version }}
-            org.opencontainers.image.created=${{ steps.meta.outputs.build_date }}
-
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -265,7 +247,7 @@ jobs:
           RELEASE_VERSION: ${{ needs.resolve-version.outputs.release_version }}
           UPSTREAM_VERSION: ${{ needs.resolve-version.outputs.upstream_version }}
           EBEEAI_VERSION: ${{ needs.resolve-version.outputs.ebeeai_version }}
-          IMAGE: ${{ steps.meta.outputs.image }}
+          IMAGE: ${{ needs.resolve-version.outputs.image }}
           TAG_MESSAGE: ${{ steps.tag_message.outputs.message }}
         shell: bash
         run: |
@@ -304,8 +286,19 @@ jobs:
             --notes-file "${BODY_FILE}"
 
       - name: Print image tags
+        env:
+          IMAGE: ${{ needs.resolve-version.outputs.image }}
+          RELEASE_VERSION: ${{ needs.resolve-version.outputs.release_version }}
+          UPSTREAM_VERSION: ${{ needs.resolve-version.outputs.upstream_version }}
+          COMMIT: ${{ needs.resolve-version.outputs.commit }}
+        shell: bash
         run: |
-          echo '${{ steps.meta.outputs.tags }}'
+          set -euo pipefail
+          for name in backend app docs gateway; do
+            for tag in "sha-${COMMIT}" "${RELEASE_VERSION}" "${UPSTREAM_VERSION}" latest; do
+              echo "${IMAGE}-${name}:${tag}"
+            done
+          done
 
   sync-version-file:
     needs: [resolve-version, release]
